@@ -159,7 +159,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="fixed bottom-2 right-0 flex h-[509px] w-[410px] flex-col rounded-md border border-neutral-01/20 px-[26px] pt-[23px]">
+        <div className="fixed bottom-2 right-0 z-20 flex h-[509px] w-[410px] flex-col rounded-md border border-neutral-01/20 bg-[#FFF] px-[26px] pt-[23px]">
           {/* HEADER */}
           <div className="flex items-center justify-between">
             <div className="text-2xl">All Device: 98</div>
