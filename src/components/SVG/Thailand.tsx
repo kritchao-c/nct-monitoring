@@ -16,8 +16,8 @@ const Thailand: React.FC<ThailandProps> = ({
   return (
     <svg
       className={className}
-      width={"auto"}
-      height={"auto"}
+      width={'auto'}
+      height={'auto'}
       viewBox="0 0 946 1574"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -351,7 +351,7 @@ const Thailand: React.FC<ThailandProps> = ({
       />
       <mask
         id="mask0_844_7846"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={416}
         y={270}
@@ -536,7 +536,7 @@ const Thailand: React.FC<ThailandProps> = ({
       </g>
       <mask
         id="mask1_844_7846"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={55}
         y={949}
@@ -648,49 +648,17 @@ const Thailand: React.FC<ThailandProps> = ({
         />
       </g>
       <defs>
-        <pattern
-          id="pattern0"
-          patternContentUnits="objectBoundingBox"
-          width={1}
-          height={1}
-        >
-          <use
-            xlinkHref="#image0_844_7846"
-            transform="matrix(0.00153123 0 0 0.0011142 -1.43058 -0.0422222)"
-          />
+        <pattern id="pattern0" patternContentUnits="objectBoundingBox" width={1} height={1}>
+          <use xlinkHref="#image0_844_7846" transform="matrix(0.00153123 0 0 0.0011142 -1.43058 -0.0422222)" />
         </pattern>
-        <pattern
-          id="pattern1"
-          patternContentUnits="objectBoundingBox"
-          width={1}
-          height={1}
-        >
-          <use
-            xlinkHref="#image1_844_7846"
-            transform="matrix(0.00152894 0 0 0.00153847 -1.60195 -1.19479)"
-          />
+        <pattern id="pattern1" patternContentUnits="objectBoundingBox" width={1} height={1}>
+          <use xlinkHref="#image1_844_7846" transform="matrix(0.00152894 0 0 0.00153847 -1.60195 -1.19479)" />
         </pattern>
-        <pattern
-          id="pattern2"
-          patternContentUnits="objectBoundingBox"
-          width={1}
-          height={1}
-        >
-          <use
-            xlinkHref="#image2_844_7846"
-            transform="matrix(0.00149108 0 0 0.00138023 -2.1019 -0.472422)"
-          />
+        <pattern id="pattern2" patternContentUnits="objectBoundingBox" width={1} height={1}>
+          <use xlinkHref="#image2_844_7846" transform="matrix(0.00149108 0 0 0.00138023 -2.1019 -0.472422)" />
         </pattern>
-        <pattern
-          id="pattern3"
-          patternContentUnits="objectBoundingBox"
-          width={1}
-          height={1}
-        >
-          <use
-            xlinkHref="#image3_844_7846"
-            transform="matrix(0.0015 0 0 0.00113609 -1.45313 -1.47337)"
-          />
+        <pattern id="pattern3" patternContentUnits="objectBoundingBox" width={1} height={1}>
+          <use xlinkHref="#image3_844_7846" transform="matrix(0.0015 0 0 0.00113609 -1.45313 -1.47337)" />
         </pattern>
         <image
           id="image0_844_7846"

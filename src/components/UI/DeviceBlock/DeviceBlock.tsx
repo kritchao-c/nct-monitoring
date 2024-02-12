@@ -1,6 +1,7 @@
-import Critical from "@/components/SVG/Critical";
-import Warning from "@/components/SVG/Warning";
-import styles from "./DeviceBlock.module.scss";
+import Critical from '@/components/SVG/Critical';
+import Warning from '@/components/SVG/Warning';
+
+import styles from './DeviceBlock.module.scss';
 
 export interface DeviceBlockProps {
   className?: string;
@@ -38,7 +39,7 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
 }) => {
   return (
     <div
-      className={`${styles.DeviceBlock} ${className ?? ""}`}
+      className={`${styles.DeviceBlock} ${className ?? ''}`}
       onClick={() => {
         if (onClick) onClick();
       }}
@@ -46,12 +47,12 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
       {/* FIRST ROW */}
       <div className="flex items-center gap-4 pr-4">
         <div className="flex flex-col">
-          <div className="flex gap-2 items-center text-red-01 font-medium text-xs">
+          <div className="flex items-center gap-2 text-xs font-medium text-red-01">
             <Critical />
             <span className="min-w-[50px]">Critical</span>
             <span>{criticalCount}</span>
           </div>
-          <div className="flex gap-2 items-center text-yellow-01 font-medium text-xs">
+          <div className="flex items-center gap-2 text-xs font-medium text-yellow-01">
             <Warning />
             <span className="min-w-[50px]">Warning</span>
             <span>{warningCount}</span>
@@ -59,20 +60,20 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
         </div>
         <div className="text-2xl">{deviceName}</div>
         <div className="flex items-center gap-x-2">
-          <div className="flex w-[10px] h-[10px] rounded-full bg-green-01 drop-shadow-md"></div>
+          <div className="flex size-[10px] rounded-full bg-green-01 drop-shadow-md"></div>
           <div className="text-green-01">Online {onlineCount}</div>
         </div>
         <div className="flex items-center gap-x-2">
-          <div className="flex w-[10px] h-[10px] rounded-full bg-red-01 drop-shadow-md"></div>
+          <div className="flex size-[10px] rounded-full bg-red-01 drop-shadow-md"></div>
           <div className="text-red-01">Offline {offlineCount}</div>
         </div>
       </div>
-      <div className="h-px bg-neutral-01/50 mx-4 my-2"></div>
+      <div className="mx-4 my-2 h-px bg-neutral-01/50"></div>
       {/* SECOND ROW */}
-      <div className="text-center pb-2">Online Status</div>
-      <div className="flex justify-center items-center text-xs gap-3">
+      <div className="pb-2 text-center">Online Status</div>
+      <div className="flex items-center justify-center gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <img src="/svg/solar-panel.svg" />
+          <img src="/svg/solar-panel.svg" alt="" />
           <div className="flex flex-col items-center">
             Online
             <span>{onlineStatus?.solar?.online}</span>
@@ -83,7 +84,7 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <img src="/svg/car-battery.svg" />
+          <img src="/svg/car-battery.svg" alt="" />
           <div className="flex flex-col items-center">
             Online
             <span>{onlineStatus?.battery?.online}</span>
@@ -94,7 +95,7 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <img src="/svg/light-bulb.svg" />
+          <img src="/svg/light-bulb.svg" alt="" />
           <div className="flex flex-col items-center">
             Online
             <span>{onlineStatus?.light?.online}</span>
