@@ -39,7 +39,7 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
 }) => {
   return (
     <div
-      className={`${styles.DeviceBlock} ${className ?? ''}`}
+      className={`${styles.DeviceBlock} ${className ?? ''} hover:shadow-xl`}
       onClick={() => {
         if (onClick) onClick();
       }}

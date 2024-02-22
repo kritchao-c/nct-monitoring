@@ -1,4 +1,4 @@
-import { Button, FloatButton, Modal, Select } from 'antd';
+import { Button, Drawer, FloatButton, Modal, Select } from 'antd';
 import { DownOutlined, LineChartOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
@@ -6,10 +6,12 @@ import { useRouter } from 'next/router';
 import SimpleBarChart from '@/components/UI/Chart/SimpleBarChart';
 import DeviceBlock from '@/components/UI/DeviceBlock/DeviceBlock';
 import ThailandChart from '@/components/UI/Chart/ThailandChart';
+import SpecificDeviceBlock from '@/components/UI/DeviceBlock/SpecificDeviceBlock';
 
 export default function Home() {
   const router = useRouter();
   const [showDevices, setShowDevices] = useState(false);
+  const [showSideData, setShowSideData] = useState(false);
   const chart1Data = [
     {
       date: '2024-01-01',
@@ -90,12 +92,25 @@ export default function Home() {
         <FloatButton tooltip={'Devices'} onClick={() => setShowDevices(true)} icon={<LineChartOutlined />} />
       )}
 
+      <Drawer width={419} title={null} placement="left" open={showSideData} onClose={() => setShowSideData(false)}>
+        <div className="flex flex-col gap-y-[25px]">
+          <SpecificDeviceBlock></SpecificDeviceBlock>
+          <SpecificDeviceBlock></SpecificDeviceBlock>
+          <SpecificDeviceBlock></SpecificDeviceBlock>
+          <SpecificDeviceBlock></SpecificDeviceBlock>
+          <SpecificDeviceBlock></SpecificDeviceBlock>
+        </div>
+      </Drawer>
+
       <div className="relative flex min-h-screen min-w-full items-center justify-center overflow-auto ">
         <ThailandChart data={mockData} className="absolute inset-0 mx-auto size-full min-h-[400px] max-w-[1280px]" />
 
         {/* NORTHERN */}
         <div className="absolute left-[55px] top-[10%] flex gap-x-4">
           <DeviceBlock
+            onClick={() => {
+              setShowSideData(true);
+            }}
             criticalCount={4}
             warningCount={5}
             deviceName="Device 17"
@@ -125,6 +140,9 @@ export default function Home() {
         {/* CENTRAL */}
         <div className="absolute left-[153px] top-[45%] flex gap-x-4">
           <DeviceBlock
+            onClick={() => {
+              setShowSideData(true);
+            }}
             criticalCount={4}
             warningCount={5}
             deviceName="Device 17"
@@ -154,6 +172,9 @@ export default function Home() {
         {/* SOUTHERN */}
         <div className="absolute bottom-[10%] left-[80px] flex gap-x-4">
           <DeviceBlock
+            onClick={() => {
+              setShowSideData(true);
+            }}
             criticalCount={4}
             warningCount={5}
             deviceName="Device 17"
@@ -187,6 +208,9 @@ export default function Home() {
             <div className="size-4 rounded-full bg-dark-01"></div>
           </div>
           <DeviceBlock
+            onClick={() => {
+              setShowSideData(true);
+            }}
             criticalCount={4}
             warningCount={5}
             deviceName="Device 17"
