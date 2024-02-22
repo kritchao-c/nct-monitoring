@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   transpilePackages: [
     '@amcharts/amcharts5',
+    '@amcharts/amcharts5-geodata',
     // antd & deps
     '@ant-design',
     '@rc-component',

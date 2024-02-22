@@ -8,7 +8,7 @@ const roboto = Roboto({
 });
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <main className={`${roboto} min-h-min min-w-[1440px] overflow-auto`}>
+    <main className={`${roboto} size-screen overflow-auto`}>
       <Component {...pageProps} />
     </main>
   );
