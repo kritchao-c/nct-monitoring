@@ -2,16 +2,54 @@ import { Button, Drawer, FloatButton, Modal, Select } from 'antd';
 import { DownOutlined, LineChartOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { faker } from '@faker-js/faker';
 
 import SimpleBarChart from '@/components/UI/Chart/SimpleBarChart';
 import DeviceBlock from '@/components/UI/DeviceBlock/DeviceBlock';
 import ThailandChart from '@/components/UI/Chart/ThailandChart';
-import SpecificDeviceBlock from '@/components/UI/DeviceBlock/SpecificDeviceBlock';
+import SpecificDeviceBlock, { SpecificDeviceBlockProps } from '@/components/UI/DeviceBlock/SpecificDeviceBlock';
+import InnerSpecificDeviceBlock, {
+  InnerSpecificDeviceBlockProps,
+} from '@/components/UI/DeviceBlock/InnerSpecificDeviceBlock';
+
+const mockRegionDevicesFunc = (): SpecificDeviceBlockProps => {
+  return {
+    deviceName: faker.commerce.productName(),
+    panelPower: {
+      online: faker.number.int({ min: 0, max: 50 }),
+      offline: faker.number.int({ min: 0, max: 50 }),
+    },
+    loadPower: {
+      online: faker.number.int({ min: 0, max: 50 }),
+      offline: faker.number.int({ min: 0, max: 50 }),
+    },
+    stageOfCharge: {
+      online: faker.number.int({ min: 0, max: 50 }),
+      offline: faker.number.int({ min: 0, max: 50 }),
+    },
+    critical: faker.number.int({ min: 0, max: 50 }),
+    warning: faker.number.int({ min: 0, max: 50 }),
+    unitCount: faker.number.int({ min: 0, max: 50 }),
+  };
+};
+const mockInnerDevicesFunc = (): InnerSpecificDeviceBlockProps => {
+  return {
+    deviceName: faker.commerce.productName(),
+    panelPower: faker.number.float({ min: 0, max: 200, fractionDigits: 2 }),
+    loadPower: faker.number.float({ min: 0, max: 10, fractionDigits: 2 }),
+    stageOfCharge: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
+    powerSaved: faker.number.float({ min: 100, max: 2000, fractionDigits: 2 }),
+  };
+};
+
+const mockRegionDevices = faker.helpers.multiple(mockRegionDevicesFunc, { count: 10 });
+const mockInnerDevices = faker.helpers.multiple(mockInnerDevicesFunc, { count: 10 });
 
 export default function Home() {
   const router = useRouter();
   const [showDevices, setShowDevices] = useState(false);
   const [showSideData, setShowSideData] = useState(false);
+  const [showInnerSideData, setShowInnerSideData] = useState(false);
   const chart1Data = [
     {
       date: '2024-01-01',
@@ -94,11 +132,23 @@ export default function Home() {
 
       <Drawer width={419} title={null} placement="left" open={showSideData} onClose={() => setShowSideData(false)}>
         <div className="flex flex-col gap-y-[25px]">
-          <SpecificDeviceBlock></SpecificDeviceBlock>
-          <SpecificDeviceBlock></SpecificDeviceBlock>
-          <SpecificDeviceBlock></SpecificDeviceBlock>
-          <SpecificDeviceBlock></SpecificDeviceBlock>
-          <SpecificDeviceBlock></SpecificDeviceBlock>
+          {mockRegionDevices.map((item, key) => {
+            return <SpecificDeviceBlock onClick={() => setShowInnerSideData(true)} {...item} key={key} />;
+          })}
+        </div>
+      </Drawer>
+
+      <Drawer
+        width={419}
+        title={null}
+        placement="left"
+        open={showInnerSideData}
+        onClose={() => setShowInnerSideData(false)}
+      >
+        <div className="flex flex-col gap-y-[25px]">
+          {mockInnerDevices.map((item, key) => {
+            return <InnerSpecificDeviceBlock onClick={() => router.push('/detail/mockid')} {...item} key={key} />;
+          })}
         </div>
       </Drawer>
 

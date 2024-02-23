@@ -14,6 +14,7 @@ const config: Config = {
       'neutral-01': '#404040',
       'dark-01': '#005980',
       'blue-01': '#004082',
+      'teal-01': '#00B8BD',
       white: '#FFF',
     },
     extend: {

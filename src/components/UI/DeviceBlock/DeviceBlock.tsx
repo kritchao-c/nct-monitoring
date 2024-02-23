@@ -73,7 +73,7 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
       <div className="pb-2 text-center">Online Status</div>
       <div className="flex items-center justify-center gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <img src="/svg/solar-panel.svg" alt="" />
+          <img src="/svg/solar-panel2.svg" alt="" className="size-[24px]" />
           <div className="flex flex-col items-center">
             Online
             <span>{onlineStatus?.solar?.online}</span>
@@ -84,7 +84,7 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <img src="/svg/car-battery.svg" alt="" />
+          <img src="/svg/car-battery.svg" alt="" className="size-[24px]" />
           <div className="flex flex-col items-center">
             Online
             <span>{onlineStatus?.battery?.online}</span>
@@ -95,7 +95,7 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <img src="/svg/light-bulb.svg" alt="" />
+          <img src="/svg/light-bulb2.svg" alt="" className="size-[24px]" />
           <div className="flex flex-col items-center">
             Online
             <span>{onlineStatus?.light?.online}</span>
