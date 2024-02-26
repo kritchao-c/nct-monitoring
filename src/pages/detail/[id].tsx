@@ -1,7 +1,8 @@
 import { NextPage } from 'next';
-import { Select } from 'antd';
+import { Drawer, Select, Switch } from 'antd';
 import { useState } from 'react';
 import { faker } from '@faker-js/faker';
+import { useRouter } from 'next/router';
 
 import Dashboard from '@/components/SVG/Dashboard';
 import DetailBlock, { DetailBlockProps } from '@/components/UI/DeviceDetails/DetailBlock';
@@ -84,7 +85,9 @@ const fakeProductionChart = (count: number) => {
 };
 
 const DeviceDetailPage: NextPage = () => {
+  const router = useRouter();
   const [selectedGraphs, setSelectedGraph] = useState<any[]>([]);
+  const [openSetting, setOpenSetting] = useState(false);
   const detailBlocks: DetailBlockProps[] = [
     {
       title: (
@@ -140,11 +143,211 @@ const DeviceDetailPage: NextPage = () => {
   ];
   return (
     <div className="min-w-screen min-h-screen pb-8">
+      <Drawer
+        title={<div className="text-2xl">Setting</div>}
+        open={openSetting}
+        onClose={() => {
+          setOpenSetting(false);
+        }}
+      >
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Work Mode
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="select mode"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Battery Type
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="select type"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Charging Voltage
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="enter voltage"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Charging Current
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="enter current"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Bat High Volt Limit
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="enter voltage"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Bat High Volt Restore
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="enter voltage"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Bat Low Volt Limit
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="enter voltage"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Bat Low Volt Restore
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="enter voltage"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Inverter On/Off
+          <Switch defaultChecked className="bg-neutral-01/20" />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          PV. Charging current
+          <Select
+            variant="borderless"
+            className="w-[150px]"
+            placeholder="enter current"
+            options={[
+              {
+                label: 'A',
+                value: 'a',
+              },
+              {
+                label: 'B',
+                value: 'b',
+              },
+            ]}
+          />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          DC Output On/Off
+          <Switch defaultChecked className="bg-neutral-01/20" />
+        </div>
+        <div className="flex items-center justify-between border-b border-neutral-01/20 py-2">
+          Alarm Buzzer On/Off
+          <Switch defaultChecked className="bg-neutral-01/20" />
+        </div>
+      </Drawer>
       <div className="mx-auto flex max-w-[1440px] flex-col px-2 pt-[66px]">
         <div className="flex items-center justify-between gap-x-2 text-[26px] font-semibold">
           <div className="flex items-center gap-x-2">
             <Dashboard />
             Dashboard Bangkok 01
+          </div>
+          <div className="flex items-center gap-x-2">
+            <img
+              src="/svg/home.svg"
+              className="cursor-pointer"
+              onClick={() => {
+                router.push('/');
+              }}
+              alt=""
+            />
+            <img
+              src="/svg/setting.svg"
+              onClick={() => {
+                setOpenSetting(true);
+              }}
+              className="cursor-pointer"
+              alt=""
+            />
           </div>
         </div>
         {/* SECTION 1 */}
@@ -306,71 +509,155 @@ const DeviceDetailPage: NextPage = () => {
           </div>
 
           {/* PRODUCTION CHART */}
-          <div className="col-span-12 flex flex-col">
-            {/* HEADER */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-x-2 text-[26px] font-semibold">Production</div>
+          {selectedGraphs.includes('production') && (
+            <div className="col-span-12 flex flex-col">
+              {/* HEADER */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-x-2 text-[26px] font-semibold">Production</div>
+                <Select
+                  variant="borderless"
+                  className="w-[100px]"
+                  defaultValue={'year'}
+                  options={[
+                    {
+                      label: 'Week',
+                      value: 'week',
+                    },
+                    {
+                      label: 'Month',
+                      value: 'month',
+                    },
+                    {
+                      label: 'Year',
+                      value: 'year',
+                    },
+                  ]}
+                />
+              </div>
+              {/* CONTENT */}
+              <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
+                <LineWithAreaChart
+                  divId="production"
+                  timeUnit="year"
+                  data={fakeProductionChart(10)}
+                  className="min-h-[300px] w-full"
+                />
+              </div>
             </div>
-            {/* CONTENT */}
-            <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
-              <LineWithAreaChart
-                divId="production"
-                timeUnit="year"
-                data={fakeProductionChart(10)}
-                className="min-h-[300px] w-full"
-              />
-            </div>
-          </div>
+          )}
 
           {/* CONSUMPTION CHART */}
-          <div className="col-span-12 flex flex-col">
-            {/* HEADER */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-x-2 text-[26px] font-semibold">Consumption </div>
+          {selectedGraphs.includes('consumption') && (
+            <div className="col-span-12 flex flex-col">
+              {/* HEADER */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-x-2 text-[26px] font-semibold">Consumption </div>
+                <Select
+                  variant="borderless"
+                  className="w-[100px]"
+                  defaultValue={'year'}
+                  options={[
+                    {
+                      label: 'Week',
+                      value: 'week',
+                    },
+                    {
+                      label: 'Month',
+                      value: 'month',
+                    },
+                    {
+                      label: 'Year',
+                      value: 'year',
+                    },
+                  ]}
+                />
+              </div>
+              {/* CONTENT */}
+              <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
+                <LineWithAreaChart
+                  divId="consumption"
+                  timeUnit="year"
+                  data={fakeProductionChart(10)}
+                  className="min-h-[300px] w-full"
+                />
+              </div>
             </div>
-            {/* CONTENT */}
-            <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
-              <LineWithAreaChart
-                divId="consumption"
-                timeUnit="year"
-                data={fakeProductionChart(10)}
-                className="min-h-[300px] w-full"
-              />
-            </div>
-          </div>
+          )}
           {/* SAVING CHART */}
-          <div className="col-span-12 flex flex-col">
-            {/* HEADER */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-x-2 text-[26px] font-semibold">Savings</div>
+          {selectedGraphs.includes('saving') && (
+            <div className="col-span-12 flex flex-col">
+              {/* HEADER */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-x-2 text-[26px] font-semibold">Savings</div>
+                <Select
+                  variant="borderless"
+                  className="w-[100px]"
+                  defaultValue={'year'}
+                  options={[
+                    {
+                      label: 'Week',
+                      value: 'week',
+                    },
+                    {
+                      label: 'Month',
+                      value: 'month',
+                    },
+                    {
+                      label: 'Year',
+                      value: 'year',
+                    },
+                  ]}
+                />
+              </div>
+              {/* CONTENT */}
+              <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
+                <LineWithAreaChart
+                  divId="savings"
+                  timeUnit="year"
+                  data={fakeProductionChart(10)}
+                  className="min-h-[300px] w-full"
+                />
+              </div>
             </div>
-            {/* CONTENT */}
-            <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
-              <LineWithAreaChart
-                divId="savings"
-                timeUnit="year"
-                data={fakeProductionChart(10)}
-                className="min-h-[300px] w-full"
-              />
-            </div>
-          </div>
+          )}
 
           {/* PANEL CHART */}
-          <div className="col-span-12 flex flex-col">
-            {/* HEADER */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-x-2 text-[26px] font-semibold">Voltage</div>
+          {selectedGraphs.includes('panelVoltage') && (
+            <div className="col-span-12 flex flex-col">
+              {/* HEADER */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-x-2 text-[26px] font-semibold">Voltage</div>
+                <Select
+                  variant="borderless"
+                  className="w-[100px]"
+                  defaultValue={'year'}
+                  options={[
+                    {
+                      label: 'Week',
+                      value: 'week',
+                    },
+                    {
+                      label: 'Month',
+                      value: 'month',
+                    },
+                    {
+                      label: 'Year',
+                      value: 'year',
+                    },
+                  ]}
+                />
+              </div>
+              {/* CONTENT */}
+              <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
+                <LineWithAreaChart
+                  divId="panel"
+                  timeUnit="year"
+                  data={fakeProductionChart(10)}
+                  className="min-h-[300px] w-full"
+                />
+              </div>
             </div>
-            {/* CONTENT */}
-            <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
-              <LineWithAreaChart
-                divId="panel"
-                timeUnit="year"
-                data={fakeProductionChart(10)}
-                className="min-h-[300px] w-full"
-              />
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
