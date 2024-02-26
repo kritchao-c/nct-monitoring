@@ -13,6 +13,7 @@ import Graph from '@/components/SVG/Graph';
 import EnergyChart from '@/components/UI/Chart/EnergyChart';
 import DollarCalendar from '@/components/SVG/DollarCalendar';
 import PieChart from '@/components/UI/Chart/PieChart';
+import LineWithAreaChart from '@/components/UI/Chart/LineWithAreaChart';
 
 const fakeProductionData = (count: number) => {
   const data: { date: number; value: number }[] = [];
@@ -60,6 +61,23 @@ const fakeSavingData = (count: number) => {
     data.push({
       x: new Date(`2024-${handleDateString(i + 1)}-01`).getTime(),
       y: faker.number.int({ min: 20000, max: 30000 }),
+    });
+  }
+  return data;
+};
+
+const fakeProductionChart = (count: number) => {
+  const data: { x: number; y: number }[] = [];
+  const handleDateString = (num: number) => {
+    if (num > 9) {
+      return `${num}`;
+    }
+    return `0${num}`;
+  };
+  for (let i = 0; i < count; i += 1) {
+    data.push({
+      x: new Date(`20${handleDateString(i + 1)}-12-25`).getTime(),
+      y: faker.number.int({ min: 1000, max: 3000 }),
     });
   }
   return data;
@@ -283,6 +301,73 @@ const DeviceDetailPage: NextPage = () => {
                     y: 10,
                   },
                 ]}
+              />
+            </div>
+          </div>
+
+          {/* PRODUCTION CHART */}
+          <div className="col-span-12 flex flex-col">
+            {/* HEADER */}
+            <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center gap-x-2 text-[26px] font-semibold">Production</div>
+            </div>
+            {/* CONTENT */}
+            <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
+              <LineWithAreaChart
+                divId="production"
+                timeUnit="year"
+                data={fakeProductionChart(10)}
+                className="min-h-[300px] w-full"
+              />
+            </div>
+          </div>
+
+          {/* CONSUMPTION CHART */}
+          <div className="col-span-12 flex flex-col">
+            {/* HEADER */}
+            <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center gap-x-2 text-[26px] font-semibold">Consumption </div>
+            </div>
+            {/* CONTENT */}
+            <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
+              <LineWithAreaChart
+                divId="consumption"
+                timeUnit="year"
+                data={fakeProductionChart(10)}
+                className="min-h-[300px] w-full"
+              />
+            </div>
+          </div>
+          {/* SAVING CHART */}
+          <div className="col-span-12 flex flex-col">
+            {/* HEADER */}
+            <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center gap-x-2 text-[26px] font-semibold">Savings</div>
+            </div>
+            {/* CONTENT */}
+            <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
+              <LineWithAreaChart
+                divId="savings"
+                timeUnit="year"
+                data={fakeProductionChart(10)}
+                className="min-h-[300px] w-full"
+              />
+            </div>
+          </div>
+
+          {/* PANEL CHART */}
+          <div className="col-span-12 flex flex-col">
+            {/* HEADER */}
+            <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center gap-x-2 text-[26px] font-semibold">Voltage</div>
+            </div>
+            {/* CONTENT */}
+            <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
+              <LineWithAreaChart
+                divId="panel"
+                timeUnit="year"
+                data={fakeProductionChart(10)}
+                className="min-h-[300px] w-full"
               />
             </div>
           </div>
