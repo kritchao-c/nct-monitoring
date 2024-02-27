@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { faker } from '@faker-js/faker';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-// import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next';
 
 import SimpleBarChart from '@/components/UI/Chart/SimpleBarChart';
 import DeviceBlock, { DeviceBlockNotification } from '@/components/UI/DeviceBlock/DeviceBlock';
@@ -56,9 +56,9 @@ const mockRegionDevices = faker.helpers.multiple(mockRegionDevicesFunc, { count:
 const mockInnerDevices = faker.helpers.multiple(mockInnerDevicesFunc, { count: 10 });
 
 export default function Home() {
-  // const { t } = useTranslation('common');
+  const { t } = useTranslation('common');
   const router = useRouter();
-  const { locale } = router;
+  // const { locale } = router;
   const [showDevices, setShowDevices] = useState(false);
   const [showSideData, setShowSideData] = useState(false);
   const [showInnerSideData, setShowInnerSideData] = useState(false);
@@ -199,7 +199,7 @@ export default function Home() {
             notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName={`${locale === 'en' ? 'Device' : 'อุปกรณ์'} 17`}
+            deviceName={`${t('device')} 17`}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -232,7 +232,7 @@ export default function Home() {
             notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName={`${locale === 'en' ? 'Device' : 'อุปกรณ์'} 17`}
+            deviceName={`${t('device')} 17`}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -265,7 +265,7 @@ export default function Home() {
             notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName={`${locale === 'en' ? 'Device' : 'อุปกรณ์'} 17`}
+            deviceName={`${t('device')} 17`}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -302,7 +302,7 @@ export default function Home() {
             notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName={`${locale === 'en' ? 'Device' : 'อุปกรณ์'} 17`}
+            deviceName={`${t('device')} 17`}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
