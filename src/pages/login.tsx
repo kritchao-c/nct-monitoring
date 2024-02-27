@@ -1,7 +1,7 @@
 import { Button, Form, Input } from 'antd';
 import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useTranslation } from 'next-i18next';
+// import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 import LanguageToggleButton from '@/components/UI/Button/LanguageToggleButton';
@@ -19,7 +19,8 @@ type FieldType = {
 
 const LoginPage: NextPage = () => {
   const router = useRouter();
-  const { t } = useTranslation('common');
+  const { locale } = router;
+  // const { t } = useTranslation('common');
   const onFinish = (values: any) => {
     console.log('Success:', values);
     router.push('/');
@@ -34,7 +35,7 @@ const LoginPage: NextPage = () => {
         <LanguageToggleButton className="cursor-pointer self-end pr-2" />
         <img src="/img/logo.png" className="mx-auto max-h-[231px] max-w-[268px]" alt="" />
         <div className="text-[45px] font-semibold">NCT</div>
-        <div className="text-xl font-semibold">{t('login-title')}</div>
+        <div className="text-xl font-semibold">{locale === 'en' ? 'Power Management System' : 'ระบบจัดการพลังงาน'}</div>
         <Form
           name="basic"
           style={{ maxWidth: 560, width: '100%' }}
