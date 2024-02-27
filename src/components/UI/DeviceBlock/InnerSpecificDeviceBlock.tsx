@@ -1,3 +1,4 @@
+import SlidingDot from './SlidingDot';
 import styles from './SpecificDeviceBlock.module.scss';
 
 export interface InnerSpecificDeviceBlockProps {
@@ -31,9 +32,9 @@ const InnerSpecificDeviceBlock: React.FC<InnerSpecificDeviceBlockProps> = ({
           className="size-[55px]"
           alt=""
         />
-        <img src="/svg/dash.svg" alt="" />
+        <SlidingDot />
         <img src="/svg/car-battery.svg" className="size-[55px]" alt="" />
-        <img src="/svg/dash.svg" alt="" />
+        <SlidingDot />
         <img
           src={!loadPower || loadPower === 0 ? '/svg/no-light-bulb.svg' : '/svg/light-bulb2.svg'}
           className="size-[55px]"

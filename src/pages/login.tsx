@@ -1,6 +1,16 @@
 import { Button, Form, Input } from 'antd';
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+import LanguageToggleButton from '@/components/UI/Button/LanguageToggleButton';
+
+export const getServerSideProps: GetServerSideProps = async ({ locale = '' }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['common'])),
+  },
+});
 
 type FieldType = {
   username?: string;
@@ -9,6 +19,7 @@ type FieldType = {
 
 const LoginPage: NextPage = () => {
   const router = useRouter();
+  const { t } = useTranslation('common');
   const onFinish = (values: any) => {
     console.log('Success:', values);
     router.push('/');
@@ -20,9 +31,10 @@ const LoginPage: NextPage = () => {
   return (
     <div className="min-w-screen flex min-h-screen items-center justify-center bg-[#F4F3F3]">
       <div className="mx-4 flex w-full max-w-[845px] flex-col items-center gap-y-4 rounded-3xl bg-[#FFF] px-4 pb-8 pt-6 md:mx-0">
+        <LanguageToggleButton className="cursor-pointer self-end pr-2" />
         <img src="/img/logo.png" className="mx-auto max-h-[231px] max-w-[268px]" alt="" />
         <div className="text-[45px] font-semibold">NCT</div>
-        <div className="text-xl font-semibold">Power Management System</div>
+        <div className="text-xl font-semibold">{t('login-title')}</div>
         <Form
           name="basic"
           style={{ maxWidth: 560, width: '100%' }}

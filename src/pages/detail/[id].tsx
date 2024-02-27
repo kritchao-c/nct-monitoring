@@ -15,6 +15,7 @@ import EnergyChart from '@/components/UI/Chart/EnergyChart';
 import DollarCalendar from '@/components/SVG/DollarCalendar';
 import PieChart from '@/components/UI/Chart/PieChart';
 import LineWithAreaChart from '@/components/UI/Chart/LineWithAreaChart';
+import SlidingDot from '@/components/UI/DeviceBlock/SlidingDot';
 
 const fakeProductionData = (count: number) => {
   const data: { date: number; value: number }[] = [];
@@ -367,7 +368,7 @@ const DeviceDetailPage: NextPage = () => {
             <div>48.49 V</div>
             <div>45.78 A</div>
           </div>
-          <img src="/svg/big-dash.svg" className="hidden lg:block" alt="" />
+          <SlidingDot className="max-w-[120px]" />
           {/* BATTERY POWER */}
           <div className="flex min-h-[347px] min-w-full flex-col items-center gap-y-2 rounded-md border border-neutral-01/20 p-2 px-8 text-[30px] font-medium shadow-md sm:min-w-0">
             <div className="text-center">Battery Power</div>
@@ -376,7 +377,7 @@ const DeviceDetailPage: NextPage = () => {
             <div>13.65 V</div>
             <div>08.95 A</div>
           </div>
-          <img src="/svg/big-dash.svg" className="hidden lg:block" alt="" />
+          <SlidingDot className="max-w-[120px]" />
           {/* LOAD POWER */}
           <div className="flex min-h-[347px] min-w-full flex-col items-center gap-y-2 rounded-md border border-neutral-01/20 p-2 px-8 text-[30px] font-medium shadow-md sm:min-w-0">
             <div className="text-center">Load Power</div>
@@ -415,9 +416,9 @@ const DeviceDetailPage: NextPage = () => {
               />
             </div>
             {/* CONTENT */}
-            <div className="mt-2 flex h-full min-h-[340px] justify-between rounded-md border border-neutral-01/10 p-4 shadow-xl">
+            <div className="mt-2 flex h-full min-h-[340px] flex-col justify-between rounded-md border border-neutral-01/10 p-4 shadow-xl md:flex-row">
               <EnergyChart
-                className="min-h-[300px] w-[75%]"
+                className="min-h-[300px] w-full md:w-[75%]"
                 productionXKey="date"
                 productionYKey="value"
                 productionData={fakeProductionData(12)}

@@ -1,16 +1,26 @@
 import { Button, Drawer, FloatButton, Modal, Select } from 'antd';
-import { DownOutlined, LineChartOutlined } from '@ant-design/icons';
+import { DownOutlined, LineChartOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { faker } from '@faker-js/faker';
+import { GetServerSideProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
 
 import SimpleBarChart from '@/components/UI/Chart/SimpleBarChart';
-import DeviceBlock from '@/components/UI/DeviceBlock/DeviceBlock';
+import DeviceBlock, { DeviceBlockNotification } from '@/components/UI/DeviceBlock/DeviceBlock';
 import ThailandChart from '@/components/UI/Chart/ThailandChart';
 import SpecificDeviceBlock, { SpecificDeviceBlockProps } from '@/components/UI/DeviceBlock/SpecificDeviceBlock';
 import InnerSpecificDeviceBlock, {
   InnerSpecificDeviceBlockProps,
 } from '@/components/UI/DeviceBlock/InnerSpecificDeviceBlock';
+import LanguageToggleButton from '@/components/UI/Button/LanguageToggleButton';
+
+export const getServerSideProps: GetServerSideProps = async ({ locale = '' }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['common'])),
+  },
+});
 
 const mockRegionDevicesFunc = (): SpecificDeviceBlockProps => {
   return {
@@ -46,6 +56,7 @@ const mockRegionDevices = faker.helpers.multiple(mockRegionDevicesFunc, { count:
 const mockInnerDevices = faker.helpers.multiple(mockInnerDevicesFunc, { count: 10 });
 
 export default function Home() {
+  const { t } = useTranslation('common');
   const router = useRouter();
   const [showDevices, setShowDevices] = useState(false);
   const [showSideData, setShowSideData] = useState(false);
@@ -78,6 +89,24 @@ export default function Home() {
     {
       date: '2024-01-07',
       value: 270,
+    },
+  ];
+
+  const mockChartStatus: DeviceBlockNotification[] = [
+    {
+      type: 'danger',
+      title: 'Chiang Mai Battery Off',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
+    },
+    {
+      type: 'info',
+      title: 'Lampang Solar Panel Off',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
+    },
+    {
+      type: 'warning',
+      title: 'Mae Hong Son MPPT Warning',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
     },
   ];
 
@@ -124,7 +153,12 @@ export default function Home() {
   return (
     <div>
       <div className="fixed right-0 top-0 z-20 mx-auto px-8 pt-8">
-        <Button onClick={() => handleLogout()}>Logout</Button>
+        <div className="flex items-center gap-x-4">
+          <LanguageToggleButton className="" />
+          <Button danger size="large" onClick={() => handleLogout()} icon={<LogoutOutlined />}>
+            Logout
+          </Button>
+        </div>
       </div>
       {!showDevices && (
         <FloatButton tooltip={'Devices'} onClick={() => setShowDevices(true)} icon={<LineChartOutlined />} />
@@ -161,9 +195,10 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
+            notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName="Device 17"
+            deviceName={`${t('device')} 17`}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -193,9 +228,10 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
+            notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName="Device 17"
+            deviceName={`${t('device')} 17`}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -225,9 +261,10 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
+            notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName="Device 17"
+            deviceName={`${t('device')} 17`}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -261,9 +298,10 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
+            notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName="Device 17"
+            deviceName={`${t('device')} 17`}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{

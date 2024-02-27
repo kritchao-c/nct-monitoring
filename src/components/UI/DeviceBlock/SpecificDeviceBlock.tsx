@@ -1,3 +1,4 @@
+import SlidingDot from './SlidingDot';
 import styles from './SpecificDeviceBlock.module.scss';
 
 export interface SpecificDeviceBlockProps {
@@ -39,9 +40,9 @@ const SpecificDeviceBlock: React.FC<SpecificDeviceBlockProps> = ({
       </div>
       <div className="flex items-center justify-between">
         <img src="/svg/solar-panel2.svg" className="size-[55px]" alt="" />
-        <img src="/svg/dash.svg" alt="" />
+        <SlidingDot />
         <img src="/svg/car-battery.svg" className="size-[55px]" alt="" />
-        <img src="/svg/dash.svg" alt="" />
+        <SlidingDot />
         <img src="/svg/light-bulb2.svg" className="size-[55px]" alt="" />
       </div>
       <div className="flex items-center justify-between pt-2 text-[10px]">
