@@ -196,7 +196,7 @@ const AdminPage: NextPage = () => {
           <Form.Item name="photoNortheast" valuePropName="fileList" getValueFromEvent={normFile}>
             <CustomUpload name="Add Photo Northest" />
           </Form.Item>
-          <Form.Item className="mt-24">
+          <Form.Item>
             <Button type="primary" className="w-full bg-blue-01" htmlType="submit">
               Submit
             </Button>
@@ -309,7 +309,7 @@ const AdminPage: NextPage = () => {
           <Form.Item name="photoNortheast" valuePropName="fileList" getValueFromEvent={normFile}>
             <CustomUpload name="Add Photo Northest" />
           </Form.Item>
-          <Form.Item className="mt-24">
+          <Form.Item>
             <Button type="primary" className="w-full bg-blue-01" htmlType="submit">
               Save
             </Button>
