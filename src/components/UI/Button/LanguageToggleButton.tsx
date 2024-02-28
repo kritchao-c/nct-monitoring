@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 
 const LanguageToggleButton: React.FC<{ className?: string }> = ({ className }) => {
   const router = useRouter();
+  const { locale } = router;
   const changeLanguageHandler = () => {
     router.replace(router.asPath, undefined, {
       locale: router.locale === 'en' ? 'th' : 'en',
@@ -9,7 +10,7 @@ const LanguageToggleButton: React.FC<{ className?: string }> = ({ className }) =
   };
   return (
     <img
-      src="/img/language-switch.png"
+      src={locale === 'en' ? '/img/language-switch.png' : '/img/th-language.png'}
       onClick={changeLanguageHandler}
       className={`cursor-pointer ${className ?? ''}`}
       alt=""
