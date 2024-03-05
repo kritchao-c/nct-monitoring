@@ -15,6 +15,7 @@ export interface SimpleBarChartProps {
   data: any[];
   suffixText?: string;
   barColor?: string;
+  color?: string;
 }
 
 const LineWithAreaChart: React.FC<SimpleBarChartProps> = ({
@@ -26,6 +27,7 @@ const LineWithAreaChart: React.FC<SimpleBarChartProps> = ({
   timeUnit = 'month',
   suffixText,
   barColor,
+  color,
 }) => {
   useEffect(() => {
     const root = am5.Root.new(divId);
@@ -100,11 +102,12 @@ const LineWithAreaChart: React.FC<SimpleBarChartProps> = ({
     // Add series
     // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
     const series = chart.series.push(
-      am5xy.LineSeries.new(root, {
+      am5xy.SmoothedXYLineSeries.new(root, {
+        name: 'test',
         minBulletDistance: 10,
         xAxis,
         yAxis,
-        fill: am5.color('#BFFFEA'),
+        fill: am5.color(color || '#9787FF'),
         valueYField: yKey,
         valueXField: xKey,
         tooltip: am5.Tooltip.new(root, {
@@ -114,15 +117,38 @@ const LineWithAreaChart: React.FC<SimpleBarChartProps> = ({
       }),
     );
 
-    series.bullets.push(() => {
-      const bulletCircle = am5.Circle.new(root, {
-        radius: 5,
-        fill: am5.color('#005980'),
-      });
-      return am5.Bullet.new(root, {
-        sprite: bulletCircle,
-      });
-    });
+    // const legend = chart.children.push(
+    //   am5.Legend.new(root, {
+    //     centerX: am5.p50,
+    //     x: am5.percent(90),
+    //     y: am5.percent(30),
+    //   }),
+    // );
+    // legend.data.push(series);
+
+    series.fills.template.set(
+      'fillGradient',
+      am5.LinearGradient.new(root, {
+        stops: [
+          {
+            opacity: 1,
+          },
+          {
+            opacity: 0,
+          },
+        ],
+      }),
+    );
+
+    // series.bullets.push(() => {
+    //   const bulletCircle = am5.Circle.new(root, {
+    //     radius: 5,
+    //     fill: am5.color('#005980'),
+    //   });
+    //   return am5.Bullet.new(root, {
+    //     sprite: bulletCircle,
+    //   });
+    // });
 
     series.fills.template.setAll({
       fillOpacity: 1,
@@ -130,8 +156,8 @@ const LineWithAreaChart: React.FC<SimpleBarChartProps> = ({
     });
 
     series.strokes.template.setAll({
-      strokeWidth: 2,
-      stroke: am5.color('#005980'),
+      strokeWidth: 1,
+      stroke: am5.color(color || '#9787FF'),
     });
     series.data.setAll(data);
 
@@ -145,7 +171,7 @@ const LineWithAreaChart: React.FC<SimpleBarChartProps> = ({
     return () => {
       root.dispose();
     };
-  }, [divId, data, xKey, yKey, timeUnit, suffixText, barColor]);
+  }, [divId, data, xKey, yKey, timeUnit, suffixText, barColor, color]);
   return <div id={divId} className={className}></div>;
 }; // Set themes
 // https://www.amcharts.com/docs/v5/concepts/themes/

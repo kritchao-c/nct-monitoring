@@ -1,8 +1,9 @@
 import { NextPage } from 'next';
-import { Drawer, Select, Switch } from 'antd';
+import { Button, Drawer, Select, Switch } from 'antd';
 import { useState } from 'react';
 import { faker } from '@faker-js/faker';
 import { useRouter } from 'next/router';
+import { ExportOutlined } from '@ant-design/icons';
 
 import Dashboard from '@/components/SVG/Dashboard';
 import DetailBlock, { DetailBlockProps } from '@/components/UI/DeviceDetails/DetailBlock';
@@ -515,29 +516,33 @@ const DeviceDetailPage: NextPage = () => {
               {/* HEADER */}
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-x-2 text-[26px] font-semibold">Production</div>
-                <Select
-                  variant="borderless"
-                  className="w-[100px]"
-                  defaultValue={'year'}
-                  options={[
-                    {
-                      label: 'Week',
-                      value: 'week',
-                    },
-                    {
-                      label: 'Month',
-                      value: 'month',
-                    },
-                    {
-                      label: 'Year',
-                      value: 'year',
-                    },
-                  ]}
-                />
+                <div className="flex items-center gap-x-2">
+                  <Select
+                    variant="borderless"
+                    className="w-[100px]"
+                    defaultValue={'year'}
+                    options={[
+                      {
+                        label: 'Week',
+                        value: 'week',
+                      },
+                      {
+                        label: 'Month',
+                        value: 'month',
+                      },
+                      {
+                        label: 'Year',
+                        value: 'year',
+                      },
+                    ]}
+                  />
+                  <Button icon={<ExportOutlined />}>Export</Button>
+                </div>
               </div>
               {/* CONTENT */}
               <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
                 <LineWithAreaChart
+                  color="#00B8BD"
                   divId="production"
                   timeUnit="year"
                   data={fakeProductionChart(10)}
@@ -553,29 +558,33 @@ const DeviceDetailPage: NextPage = () => {
               {/* HEADER */}
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-x-2 text-[26px] font-semibold">Consumption </div>
-                <Select
-                  variant="borderless"
-                  className="w-[100px]"
-                  defaultValue={'year'}
-                  options={[
-                    {
-                      label: 'Week',
-                      value: 'week',
-                    },
-                    {
-                      label: 'Month',
-                      value: 'month',
-                    },
-                    {
-                      label: 'Year',
-                      value: 'year',
-                    },
-                  ]}
-                />
+                <div className="flex items-center gap-x-2">
+                  <Select
+                    variant="borderless"
+                    className="w-[100px]"
+                    defaultValue={'year'}
+                    options={[
+                      {
+                        label: 'Week',
+                        value: 'week',
+                      },
+                      {
+                        label: 'Month',
+                        value: 'month',
+                      },
+                      {
+                        label: 'Year',
+                        value: 'year',
+                      },
+                    ]}
+                  />
+                  <Button icon={<ExportOutlined />}>Export</Button>
+                </div>
               </div>
               {/* CONTENT */}
               <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
                 <LineWithAreaChart
+                  color="#005980"
                   divId="consumption"
                   timeUnit="year"
                   data={fakeProductionChart(10)}
@@ -590,29 +599,33 @@ const DeviceDetailPage: NextPage = () => {
               {/* HEADER */}
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-x-2 text-[26px] font-semibold">Savings</div>
-                <Select
-                  variant="borderless"
-                  className="w-[100px]"
-                  defaultValue={'year'}
-                  options={[
-                    {
-                      label: 'Week',
-                      value: 'week',
-                    },
-                    {
-                      label: 'Month',
-                      value: 'month',
-                    },
-                    {
-                      label: 'Year',
-                      value: 'year',
-                    },
-                  ]}
-                />
+                <div className="flex items-center gap-x-2">
+                  <Select
+                    variant="borderless"
+                    className="w-[100px]"
+                    defaultValue={'year'}
+                    options={[
+                      {
+                        label: 'Week',
+                        value: 'week',
+                      },
+                      {
+                        label: 'Month',
+                        value: 'month',
+                      },
+                      {
+                        label: 'Year',
+                        value: 'year',
+                      },
+                    ]}
+                  />
+                  <Button icon={<ExportOutlined />}>Export</Button>
+                </div>
               </div>
               {/* CONTENT */}
               <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
                 <LineWithAreaChart
+                  color="#3BA881"
                   divId="savings"
                   timeUnit="year"
                   data={fakeProductionChart(10)}
@@ -628,29 +641,33 @@ const DeviceDetailPage: NextPage = () => {
               {/* HEADER */}
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-x-2 text-[26px] font-semibold">Voltage</div>
-                <Select
-                  variant="borderless"
-                  className="w-[100px]"
-                  defaultValue={'year'}
-                  options={[
-                    {
-                      label: 'Week',
-                      value: 'week',
-                    },
-                    {
-                      label: 'Month',
-                      value: 'month',
-                    },
-                    {
-                      label: 'Year',
-                      value: 'year',
-                    },
-                  ]}
-                />
+                <div className="flex items-center gap-x-2">
+                  <Select
+                    variant="borderless"
+                    className="w-[100px]"
+                    defaultValue={'year'}
+                    options={[
+                      {
+                        label: 'Week',
+                        value: 'week',
+                      },
+                      {
+                        label: 'Month',
+                        value: 'month',
+                      },
+                      {
+                        label: 'Year',
+                        value: 'year',
+                      },
+                    ]}
+                  />
+                  <Button icon={<ExportOutlined />}>Export</Button>
+                </div>
               </div>
               {/* CONTENT */}
               <div className="mt-2.5 flex h-full min-h-[340px] flex-col items-center gap-2 rounded-md border border-neutral-01/10 p-4 shadow-xl">
                 <LineWithAreaChart
+                  color="#FDB600"
                   divId="panel"
                   timeUnit="year"
                   data={fakeProductionChart(10)}
