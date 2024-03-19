@@ -1,4 +1,11 @@
 {
   "login-title": "ระบบจัดการพลังงาน",
-  "device": "อุปกรณ์"
+  "device": "อุปกรณ์",
+  "northernDevice": "ภาคเหนือ",
+  "southernDevice": "ภาคใต้",
+  "centralDevice": "ภาคกลาง",
+  "northeastDevice": "ภาคอีสาน",
+  "selectDate": "เลือกช่วงเวลา",
+  "selectRegion": "เลือกภูมิภาค",
+  "all": "ทั้งหมด"
 }

@@ -1,14 +1,23 @@
-import { Button, Drawer, FloatButton, Modal, Select } from 'antd';
-import { DownOutlined, LineChartOutlined, LogoutOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { Badge, Button, DatePicker, Drawer, FloatButton, Input, Modal, Select } from 'antd';
+import {
+  BellOutlined,
+  CloseOutlined,
+  DownOutlined,
+  ExportOutlined,
+  LineChartOutlined,
+  LogoutOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { faker } from '@faker-js/faker';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+import dynamic from 'next/dynamic';
 
 import SimpleBarChart from '@/components/UI/Chart/SimpleBarChart';
-import DeviceBlock, { DeviceBlockNotification } from '@/components/UI/DeviceBlock/DeviceBlock';
+import { DeviceBlockNotification } from '@/components/UI/DeviceBlock/DeviceBlock';
 import ThailandChart from '@/components/UI/Chart/ThailandChart';
 import SpecificDeviceBlock, { SpecificDeviceBlockProps } from '@/components/UI/DeviceBlock/SpecificDeviceBlock';
 import InnerSpecificDeviceBlock, {
@@ -16,6 +25,7 @@ import InnerSpecificDeviceBlock, {
 } from '@/components/UI/DeviceBlock/InnerSpecificDeviceBlock';
 import LanguageToggleButton from '@/components/UI/Button/LanguageToggleButton';
 
+const DeviceBlock = dynamic(() => import('@/components/UI/DeviceBlock/DeviceBlock'), { ssr: false });
 export const getServerSideProps: GetServerSideProps = async ({ locale = '' }) => ({
   props: {
     ...(await serverSideTranslations(locale, ['common'])),
@@ -58,6 +68,9 @@ const mockInnerDevices = faker.helpers.multiple(mockInnerDevicesFunc, { count: 1
 export default function Home() {
   const { t } = useTranslation('common');
   const router = useRouter();
+  const [showNotification, setShowNotification] = useState(false);
+  const [showExportNotification, setShowExportNotification] = useState(false);
+  const [notifications, setNotifications] = useState<DeviceBlockNotification[]>([]);
   // const { locale } = router;
   const [showDevices, setShowDevices] = useState(false);
   const [showSideData, setShowSideData] = useState(false);
@@ -109,7 +122,42 @@ export default function Home() {
       title: 'Mae Hong Son MPPT Warning',
       description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
     },
+    {
+      type: 'danger',
+      title: 'Chiang Mai Battery Off',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
+    },
+    {
+      type: 'info',
+      title: 'Lampang Solar Panel Off',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
+    },
+    {
+      type: 'warning',
+      title: 'Mae Hong Son MPPT Warning',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
+    },
+    {
+      type: 'danger',
+      title: 'Chiang Mai Battery Off',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
+    },
+    {
+      type: 'info',
+      title: 'Lampang Solar Panel Off',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
+    },
+    {
+      type: 'warning',
+      title: 'Mae Hong Son MPPT Warning',
+      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
+    },
   ];
+
+  useEffect(() => {
+    setNotifications(mockChartStatus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const mockData = [
     {
@@ -153,8 +201,121 @@ export default function Home() {
 
   return (
     <div>
-      <div className="fixed right-0 top-0 z-20 mx-auto px-8 pt-8">
+      {/* EXPORT ALARM MODAL */}
+      <Modal
+        title={'Export Alarm'}
+        footer={null}
+        closable
+        open={showExportNotification}
+        onCancel={() => setShowExportNotification(false)}
+      >
+        <div className="flex items-end gap-x-4">
+          <div className="flex flex-col gap-2">
+            <div>{t('selectDate')}</div>
+            <DatePicker.RangePicker />
+          </div>
+          <div className="flex flex-col gap-2">
+            <div>{t('selectRegion')}</div>
+            <Select
+              className="min-w-[120px]"
+              placeholder={t('selectRegion')}
+              options={[
+                {
+                  label: t('all'),
+                  value: 'all',
+                },
+                {
+                  label: t('northernDevice'),
+                  value: 'northern',
+                },
+                {
+                  label: t('centralDevice'),
+                  value: 'central',
+                },
+                {
+                  label: t('northeastDevice'),
+                  value: 'northeast',
+                },
+                {
+                  label: t('southernDevice'),
+                  value: 'southern',
+                },
+              ]}
+            />
+          </div>
+          <Button className="bg-blue-01 hover:bg-blue-01/80" type="primary">
+            Export
+          </Button>
+        </div>
+      </Modal>
+      <div className="fixed right-0 top-0 z-30 mx-auto px-8 pt-8">
         <div className="flex items-center gap-x-4">
+          <div className="relative z-30">
+            {/* NOTIFICATIONS */}
+            <Badge count={notifications.length} className="mr-3">
+              {showNotification && (
+                <div
+                  style={{ zIndex: 1000 }}
+                  className="fixed right-5 top-5 flex min-w-[400px] flex-col gap-y-[21px] shadow-md md:absolute"
+                >
+                  <div className="min-size-full z-30 max-h-[500px] overflow-auto rounded-md border border-neutral-01/20 bg-white/80 p-4">
+                    <div className="flex flex-col gap-y-[21px]">
+                      <div className="">
+                        <div className="flex items-center justify-between">
+                          <div className="font-bold">All Alarms</div>
+                          <div className="flex items-center gap-x-2">
+                            <Button onClick={() => setShowExportNotification(true)} icon={<ExportOutlined />}>
+                              Export
+                            </Button>
+                            <CloseOutlined
+                              className="cursor-pointer text-xl"
+                              onClick={() => setShowNotification(false)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {!notifications || notifications?.length === 0 ? (
+                        <div className="flex items-center justify-center text-center">No notification...</div>
+                      ) : undefined}
+                      <div className="flex max-h-full flex-col gap-y-2">
+                        {notifications?.map((item, key) => {
+                          let svg = '/svg/info.svg';
+                          let textColor = 'text-[#33CCEE]';
+                          switch (item.type) {
+                            case 'danger':
+                              textColor = 'text-red-01';
+                              svg = '/svg/danger.svg';
+                              break;
+                            case 'warning':
+                              textColor = 'text-[#EE7700]';
+                              svg = '/svg/warning.svg';
+                              break;
+
+                            default:
+                              break;
+                          }
+                          return (
+                            <div
+                              key={key}
+                              className="flex items-start gap-x-2 rounded-md border border-neutral-01/20 bg-white p-4 shadow-lg"
+                            >
+                              <img src={svg} alt="" />
+                              <div className="flex flex-col gap-y-2">
+                                <div className={`text-sm font-semibold ${textColor}`}>{item.title}</div>
+                                <div className="text-[12px]">{item.description}</div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <BellOutlined onClick={() => setShowNotification(!showNotification)} className="cursor-pointer text-xl" />
+            </Badge>
+          </div>
+
           <LanguageToggleButton className="" />
           <Button danger size="large" onClick={() => handleLogout()} icon={<LogoutOutlined />}>
             Logout
@@ -165,7 +326,14 @@ export default function Home() {
         <FloatButton tooltip={'Devices'} onClick={() => setShowDevices(true)} icon={<LineChartOutlined />} />
       )}
 
-      <Drawer width={419} title={null} placement="left" open={showSideData} onClose={() => setShowSideData(false)}>
+      {/* SIDE DATA */}
+      <Drawer
+        width={419}
+        title={<Input placeholder="input search text" addonAfter={<SearchOutlined />} />}
+        placement="left"
+        open={showSideData}
+        onClose={() => setShowSideData(false)}
+      >
         <div className="flex flex-col gap-y-[25px]">
           {mockRegionDevices.map((item, key) => {
             return <SpecificDeviceBlock onClick={() => setShowInnerSideData(true)} {...item} key={key} />;
@@ -173,9 +341,10 @@ export default function Home() {
         </div>
       </Drawer>
 
+      {/* INNER SIDE DATA */}
       <Drawer
         width={419}
-        title={null}
+        title={<Input placeholder="input search text" addonAfter={<SearchOutlined />} />}
         placement="left"
         open={showInnerSideData}
         onClose={() => setShowInnerSideData(false)}
@@ -196,10 +365,11 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
+            deviceCount={17}
             notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName={`${t('device')} 17`}
+            deviceName={t('northernDevice')}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -229,10 +399,11 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
+            deviceCount={17}
             notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName={`${t('device')} 17`}
+            deviceName={t('centralDevice')}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -259,13 +430,14 @@ export default function Home() {
         {/* SOUTHERN */}
         <div className="absolute bottom-[10%] left-[80px] flex gap-x-4">
           <DeviceBlock
+            deviceCount={17}
             onClick={() => {
               setShowSideData(true);
             }}
             notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName={`${t('device')} 17`}
+            deviceName={t('southernDevice')}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{
@@ -290,7 +462,7 @@ export default function Home() {
         </div>
 
         {/* NORTHERN EAST */}
-        <div className="absolute right-[80px] top-[30%] z-20 flex gap-x-4">
+        <div className="absolute right-[80px] top-[30%] z-10 flex gap-x-4">
           <div className="hidden items-center 2xl:flex">
             <div className="-mr-1 h-1 w-[80px] bg-dark-01"></div>
             <div className="size-4 rounded-full bg-dark-01"></div>
@@ -299,10 +471,11 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
+            deviceCount={17}
             notification={mockChartStatus}
             criticalCount={4}
             warningCount={5}
-            deviceName={`${t('device')} 17`}
+            deviceName={t('northeastDevice')}
             offlineCount={1}
             onlineCount={1}
             onlineStatus={{

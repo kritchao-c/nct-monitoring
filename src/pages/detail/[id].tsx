@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { Button, Drawer, Select, Switch } from 'antd';
+import { Button, DatePicker, Drawer, Modal, Select, Switch } from 'antd';
 import { useState } from 'react';
 import { faker } from '@faker-js/faker';
 import { useRouter } from 'next/router';
@@ -88,8 +88,10 @@ const fakeProductionChart = (count: number) => {
 
 const DeviceDetailPage: NextPage = () => {
   const router = useRouter();
-  const [selectedGraphs, setSelectedGraph] = useState<any[]>([]);
+  const [selectedGraphs, setSelectedGraphs] = useState<any[]>([]);
+  const [showExport, setShowExport] = useState(false);
   const [openSetting, setOpenSetting] = useState(false);
+  const [selectedGraph, setSelectedGraph] = useState<string | undefined>();
   const detailBlocks: DetailBlockProps[] = [
     {
       title: (
@@ -143,8 +145,29 @@ const DeviceDetailPage: NextPage = () => {
       ),
     },
   ];
+  const handleSelectedExportGraph = (name: string) => {
+    setSelectedGraph(name);
+    setShowExport(true);
+  };
   return (
     <div className="min-w-screen min-h-screen pb-8">
+      <Modal
+        title={`Export ${selectedGraph}`}
+        footer={null}
+        closable
+        open={showExport}
+        onCancel={() => setShowExport(false)}
+      >
+        <div className="flex items-end justify-between gap-x-4">
+          <div className="flex flex-col gap-2">
+            <div>Select Date</div>
+            <DatePicker.RangePicker />
+          </div>
+          <Button className="bg-blue-01 hover:bg-blue-01/80" type="primary">
+            Export
+          </Button>
+        </div>
+      </Modal>
       <Drawer
         title={<div className="text-2xl">Setting</div>}
         open={openSetting}
@@ -407,7 +430,7 @@ const DeviceDetailPage: NextPage = () => {
                 placeholder="Select Graph"
                 showSearch={false}
                 value={selectedGraphs}
-                onChange={setSelectedGraph}
+                onChange={setSelectedGraphs}
                 options={[
                   { label: 'Production', value: 'production' },
                   { label: 'Consumption', value: 'consumption' },
@@ -536,7 +559,9 @@ const DeviceDetailPage: NextPage = () => {
                       },
                     ]}
                   />
-                  <Button icon={<ExportOutlined />}>Export</Button>
+                  <Button onClick={() => handleSelectedExportGraph('Production')} icon={<ExportOutlined />}>
+                    Export
+                  </Button>
                 </div>
               </div>
               {/* CONTENT */}
@@ -578,7 +603,9 @@ const DeviceDetailPage: NextPage = () => {
                       },
                     ]}
                   />
-                  <Button icon={<ExportOutlined />}>Export</Button>
+                  <Button onClick={() => handleSelectedExportGraph('Consumption')} icon={<ExportOutlined />}>
+                    Export
+                  </Button>
                 </div>
               </div>
               {/* CONTENT */}
@@ -619,7 +646,9 @@ const DeviceDetailPage: NextPage = () => {
                       },
                     ]}
                   />
-                  <Button icon={<ExportOutlined />}>Export</Button>
+                  <Button onClick={() => handleSelectedExportGraph('Savings')} icon={<ExportOutlined />}>
+                    Export
+                  </Button>
                 </div>
               </div>
               {/* CONTENT */}
@@ -661,7 +690,9 @@ const DeviceDetailPage: NextPage = () => {
                       },
                     ]}
                   />
-                  <Button icon={<ExportOutlined />}>Export</Button>
+                  <Button onClick={() => handleSelectedExportGraph('Voltage')} icon={<ExportOutlined />}>
+                    Export
+                  </Button>
                 </div>
               </div>
               {/* CONTENT */}

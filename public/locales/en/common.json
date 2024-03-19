@@ -1,4 +1,11 @@
 {
   "login-title": "Power Management System",
-  "device": "Device"
+  "device": "Device",
+  "northernDevice": "Northern",
+  "southernDevice": "Southern",
+  "centralDevice": "Central",
+  "northeastDevice": "Northeast",
+  "selectDate": "Select Date",
+  "selectRegion": "Select Region",
+  "all": "All"
 }

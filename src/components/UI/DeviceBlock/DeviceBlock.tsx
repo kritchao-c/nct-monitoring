@@ -1,5 +1,8 @@
+'use-client';
+
 import { ReactNode, useState } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import Critical from '@/components/SVG/Critical';
 import Warning from '@/components/SVG/Warning';
@@ -13,6 +16,7 @@ export interface DeviceBlockProps {
   deviceName?: string;
   onlineCount?: number;
   offlineCount?: number;
+  deviceCount?: number;
   onlineStatus?: {
     solar?: {
       online?: number;
@@ -47,8 +51,10 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
   offlineCount,
   onClick,
   notification,
+  deviceCount,
 }) => {
   const [showStatus, setShowStatus] = useState(false);
+  const { t } = useTranslation('common');
 
   return (
     <div
@@ -115,7 +121,11 @@ const DeviceBlock: React.FC<DeviceBlockProps> = ({
             <span>{warningCount}</span>
           </div>
         </div>
-        <div className="text-2xl">{deviceName}</div>
+        <div className="flex flex-col items-end justify-end font-medium">
+          <div className="leading-none">{deviceName}</div>
+          <div className="leading-none">{t('device')}</div>
+        </div>
+        <div className="text-2xl">{deviceCount}</div>
         <div className="flex items-center gap-x-2">
           <div className="flex size-[10px] rounded-full bg-green-01 drop-shadow-md"></div>
           <div className="text-green-01">Online {onlineCount}</div>
