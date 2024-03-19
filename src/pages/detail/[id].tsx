@@ -162,6 +162,8 @@ const DeviceDetailPage: NextPage = () => {
           <div className="flex flex-col gap-2">
             <div>Select Period</div>
             <Select
+              placeholder="select period"
+              className="min-w-[260px]"
               options={[
                 {
                   label: 'Daily',
