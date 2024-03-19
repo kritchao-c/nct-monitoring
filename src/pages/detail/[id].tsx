@@ -160,8 +160,23 @@ const DeviceDetailPage: NextPage = () => {
       >
         <div className="flex items-end justify-between gap-x-4">
           <div className="flex flex-col gap-2">
-            <div>Select Date</div>
-            <DatePicker.RangePicker />
+            <div>Select Period</div>
+            <Select
+              options={[
+                {
+                  label: 'Daily',
+                  value: 'day',
+                },
+                {
+                  label: 'Monthly',
+                  value: 'month',
+                },
+                {
+                  label: 'Yearly',
+                  value: 'year',
+                },
+              ]}
+            />
           </div>
           <Button className="bg-blue-01 hover:bg-blue-01/80" type="primary">
             Export
