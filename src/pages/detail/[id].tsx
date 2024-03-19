@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { Button, DatePicker, Drawer, Modal, Select, Switch } from 'antd';
+import { Button, Drawer, Modal, Select, Switch } from 'antd';
 import { useState } from 'react';
 import { faker } from '@faker-js/faker';
 import { useRouter } from 'next/router';
