@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { Button, Drawer, Modal, Select, Switch } from 'antd';
+import { Button, Drawer, Form, Modal, Select, Switch } from 'antd';
 import { useState } from 'react';
 import { faker } from '@faker-js/faker';
 import { useRouter } from 'next/router';
@@ -155,34 +155,42 @@ const DeviceDetailPage: NextPage = () => {
         title={`Export ${selectedGraph}`}
         footer={null}
         closable
+        centered
         open={showExport}
         onCancel={() => setShowExport(false)}
+        width={350}
       >
         <div className="flex items-end justify-between gap-x-4">
-          <div className="flex flex-col gap-2">
-            <div>Select Period</div>
-            <Select
-              placeholder="select period"
-              className="min-w-[260px]"
-              options={[
-                {
-                  label: 'Daily',
-                  value: 'day',
-                },
-                {
-                  label: 'Monthly',
-                  value: 'month',
-                },
-                {
-                  label: 'Yearly',
-                  value: 'year',
-                },
-              ]}
-            />
-          </div>
-          <Button className="bg-blue-01 hover:bg-blue-01/80" type="primary">
-            Export
-          </Button>
+          <Form layout="inline" className="items-end">
+            <div className="flex flex-col gap-2">
+              <div>Select Period</div>
+              <div className="flex items-start justify-between">
+                <Form.Item name="period" rules={[{ required: true, message: 'please select period' }]}>
+                  <Select
+                    placeholder="select period"
+                    className="min-w-[200px]"
+                    options={[
+                      {
+                        label: 'Daily',
+                        value: 'day',
+                      },
+                      {
+                        label: 'Monthly',
+                        value: 'month',
+                      },
+                      {
+                        label: 'Yearly',
+                        value: 'year',
+                      },
+                    ]}
+                  />
+                </Form.Item>
+                <Button htmlType="submit" className="bg-blue-01 hover:bg-blue-01/80" type="primary">
+                  Export
+                </Button>
+              </div>
+            </div>
+          </Form>
         </div>
       </Modal>
       <Drawer

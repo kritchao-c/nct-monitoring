@@ -1,10 +1,20 @@
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, notification } from 'antd';
 import { GetServerSideProps, NextPage } from 'next';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useState } from 'react';
+import { AxiosError } from 'axios';
 
 import LanguageToggleButton from '@/components/UI/Button/LanguageToggleButton';
+import axo from '@/configs/axios';
+import { environments } from '@/configs/environments';
+
+interface LoginResponse {
+  status: string;
+  token: string;
+  expireAt: string;
+}
 
 export const getServerSideProps: GetServerSideProps = async ({ locale = '' }) => ({
   props: {
@@ -18,15 +28,31 @@ type FieldType = {
 };
 
 const LoginPage: NextPage = () => {
-  const router = useRouter();
+  // const router = useRouter();
   // const { locale } = router;
   const { t } = useTranslation('common');
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-    router.push('/');
+  const [loading, setLoading] = useState(false);
+  const onFinish = async (values: { username: string; password: string }) => {
+    const { apiUrl, mariaPort } = environments;
+    setLoading(true);
+    try {
+      const res = await axo.post<LoginResponse>(`${apiUrl}:${mariaPort}/login`, values);
+      // eslint-disable-next-line no-console
+      console.log(res.data);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        notification.error({
+          message: 'Login failed, Please try again later..',
+          description: <div className="italic">reason: {error.message}</div>,
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
+    // eslint-disable-next-line no-console
     console.log('Failed:', errorInfo);
   };
   return (
@@ -64,7 +90,7 @@ const LoginPage: NextPage = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="min-w-full bg-blue-01">
+            <Button loading={loading} type="primary" htmlType="submit" className="min-w-full bg-blue-01">
               LOGIN
             </Button>
           </Form.Item>
