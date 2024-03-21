@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import { Button, Drawer, Form, Modal, Select, Switch } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { faker } from '@faker-js/faker';
 import { useRouter } from 'next/router';
 import { ExportOutlined } from '@ant-design/icons';
@@ -17,6 +17,10 @@ import DollarCalendar from '@/components/SVG/DollarCalendar';
 import PieChart from '@/components/UI/Chart/PieChart';
 import LineWithAreaChart from '@/components/UI/Chart/LineWithAreaChart';
 import SlidingDot from '@/components/UI/DeviceBlock/SlidingDot';
+import { environments } from '@/configs/environments';
+import { UserInfo } from '@/types';
+import axo from '@/configs/axios';
+import LoadingScreen from '@/components/UI/LoadingScreen';
 
 const fakeProductionData = (count: number) => {
   const data: { date: number; value: number }[] = [];
@@ -88,10 +92,41 @@ const fakeProductionChart = (count: number) => {
 
 const DeviceDetailPage: NextPage = () => {
   const router = useRouter();
+  const [pageLoading, setPageLoading] = useState(true);
   const [selectedGraphs, setSelectedGraphs] = useState<any[]>([]);
   const [showExport, setShowExport] = useState(false);
   const [openSetting, setOpenSetting] = useState(false);
   const [selectedGraph, setSelectedGraph] = useState<string | undefined>();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const getUserInfo = async (tk: string) => {
+      try {
+        const { apiUrl, mariaPort } = environments;
+        const res = await axo.get<UserInfo>(`${apiUrl}:${mariaPort}/info`, {
+          headers: {
+            Authorization: `Bearer ${tk}`,
+          },
+        });
+        if (!res.data) {
+          localStorage.removeItem('token');
+          router.push('/login');
+        }
+        setPageLoading(false);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+        localStorage.removeItem('token');
+        router.push('/login');
+      }
+    };
+    if (token && router.isReady) {
+      getUserInfo(token);
+    } else {
+      router.push('/login');
+    }
+  }, [router]);
+
   const detailBlocks: DetailBlockProps[] = [
     {
       title: (
@@ -149,6 +184,9 @@ const DeviceDetailPage: NextPage = () => {
     setSelectedGraph(name);
     setShowExport(true);
   };
+  if (pageLoading) {
+    return <LoadingScreen />;
+  }
   return (
     <div className="min-w-screen min-h-screen pb-8">
       <Modal

@@ -1,7 +1,6 @@
 'use-client';
 
 import * as am5 from '@amcharts/amcharts5';
-import { TimeUnit } from '@amcharts/amcharts5/.internal/core/util/Time';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import { useEffect } from 'react';
@@ -11,7 +10,6 @@ export interface SimpleBarChartProps {
   className?: string;
   xKey?: string;
   yKey?: string;
-  timeUnit?: TimeUnit;
   data: any[];
   suffixText?: string;
   barColor?: string;
@@ -23,16 +21,23 @@ const SimpleBarChart: React.FC<SimpleBarChartProps> = ({
   className,
   xKey = 'x',
   yKey = 'y',
-  timeUnit = 'month',
   suffixText,
   barColor,
 }) => {
   useEffect(() => {
     const root = am5.Root.new(divId);
     root.setThemes([am5themes_Animated.new(root)]);
-    root.dateFormatter.setAll({
-      dateFormat: 'yyyy-MM-dd',
-      dateFields: ['valueX'],
+    root.numberFormatter.setAll({
+      numberFormat: '#.##a | #',
+
+      // Group only into M (millions), and B (billions)
+      bigNumberPrefixes: [
+        { number: 1e4, suffix: 'k' },
+        { number: 1e6, suffix: 'M' },
+      ],
+
+      // Do not use small number prefixes at all
+      smallNumberPrefixes: [],
     });
 
     // Create chart
@@ -56,7 +61,7 @@ const SimpleBarChart: React.FC<SimpleBarChartProps> = ({
     // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
     const xRenderer = am5xy.AxisRendererX.new(root, {
       minGridDistance: 0,
-      strokeOpacity: 0.2,
+      strokeOpacity: 0.4,
     });
     xRenderer.grid.template.set('forceHidden', true);
     xRenderer.labels.template.setAll({
@@ -64,19 +69,44 @@ const SimpleBarChart: React.FC<SimpleBarChartProps> = ({
     });
 
     const xAxis = chart.xAxes.push(
-      am5xy.DateAxis.new(root, {
+      am5xy.CategoryAxis.new(root, {
         snapTooltip: true,
-        baseInterval: {
-          timeUnit,
-          count: 1,
-        },
-        dateFormats: {
-          day: 'EEE',
-        },
+        categoryField: xKey,
         renderer: xRenderer,
         tooltip: am5.Tooltip.new(root, {}),
       }),
     );
+    xAxis.data.setAll(data);
+
+    if (data.length > 5) {
+      xRenderer.labels.template.setAll({
+        maxWidth: 50,
+        rotation: 45,
+        oversizedBehavior: 'truncate',
+        centerX: am5.p100,
+        ellipsis: '...',
+      });
+    }
+    if (data.length > 10) {
+      xRenderer.labels.template.setAll({
+        maxWidth: 50,
+        rotation: 45,
+        fontSize: 9,
+        oversizedBehavior: 'truncate',
+        centerX: am5.p100,
+        ellipsis: '..',
+      });
+    }
+    if (data.length > 10) {
+      xRenderer.labels.template.setAll({
+        maxWidth: 10,
+        rotation: 45,
+        fontSize: 9,
+        oversizedBehavior: 'truncate',
+        centerX: am5.p100,
+        ellipsis: '.',
+      });
+    }
 
     const yRenderer = am5xy.AxisRendererY.new(root, {});
     yRenderer.labels.template.setAll({
@@ -85,7 +115,7 @@ const SimpleBarChart: React.FC<SimpleBarChartProps> = ({
 
     const yAxis = chart.yAxes.push(
       am5xy.ValueAxis.new(root, {
-        maxDeviation: 0,
+        min: 0,
         renderer: yRenderer,
       }),
     );
@@ -97,7 +127,7 @@ const SimpleBarChart: React.FC<SimpleBarChartProps> = ({
         xAxis,
         yAxis,
         valueYField: yKey,
-        valueXField: xKey,
+        categoryXField: xKey,
         tooltip: am5.Tooltip.new(root, {
           pointerOrientation: 'vertical',
           labelText: `{valueY} ${suffixText || ''}`,
@@ -110,15 +140,11 @@ const SimpleBarChart: React.FC<SimpleBarChartProps> = ({
       cornerRadiusTR: 4,
       maxWidth: 30,
       strokeOpacity: 0,
-      fill: am5.color(barColor || '#E8F3FC'),
+      fill: am5.color(barColor || '#00B8BD'),
     });
 
     // Set up data processor to parse string dates
     // https://www.amcharts.com/docs/v5/concepts/data/#Pre_processing_data
-    series.data.processor = am5.DataProcessor.new(root, {
-      dateFormat: 'yyyy-MM-dd',
-      dateFields: ['date'],
-    });
 
     series.data.setAll(data);
 
@@ -132,7 +158,7 @@ const SimpleBarChart: React.FC<SimpleBarChartProps> = ({
     return () => {
       root.dispose();
     };
-  }, [divId, data, xKey, yKey, timeUnit, suffixText, barColor]);
+  }, [divId, data, xKey, yKey, suffixText, barColor]);
   return <div id={divId} className={className}></div>;
 }; // Set themes
 // https://www.amcharts.com/docs/v5/concepts/themes/

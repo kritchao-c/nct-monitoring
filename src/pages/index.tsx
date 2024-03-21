@@ -1,4 +1,4 @@
-import { Badge, Button, DatePicker, Drawer, FloatButton, Input, Modal, Select } from 'antd';
+import { Badge, Button, DatePicker, Drawer, FloatButton, Input, Modal, Select, Skeleton } from 'antd';
 import {
   BellOutlined,
   CloseOutlined,
@@ -15,15 +15,30 @@ import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
+import dayjs from 'dayjs';
+import { AxiosError } from 'axios';
 
 import SimpleBarChart from '@/components/UI/Chart/SimpleBarChart';
 import { DeviceBlockNotification } from '@/components/UI/DeviceBlock/DeviceBlock';
-import ThailandChart from '@/components/UI/Chart/ThailandChart';
+import ThailandChart, { PointData } from '@/components/UI/Chart/ThailandChart';
 import SpecificDeviceBlock, { SpecificDeviceBlockProps } from '@/components/UI/DeviceBlock/SpecificDeviceBlock';
 import InnerSpecificDeviceBlock, {
   InnerSpecificDeviceBlockProps,
 } from '@/components/UI/DeviceBlock/InnerSpecificDeviceBlock';
 import LanguageToggleButton from '@/components/UI/Button/LanguageToggleButton';
+import axo from '@/configs/axios';
+import { environments } from '@/configs/environments';
+import {
+  GraphPeriods,
+  OverallGraphResponse,
+  OverallNotificationsResponse,
+  OverallNotificationsResult,
+  OverallRegion,
+  OverallResponse,
+  UserInfo,
+} from '@/types';
+import LoadingScreen from '@/components/UI/LoadingScreen';
+import { handleNotificationType, handlePeriod, sortObjectsByDateTimeKey } from '@/utils/string';
 
 const DeviceBlock = dynamic(() => import('@/components/UI/DeviceBlock/DeviceBlock'), { ssr: false });
 export const getServerSideProps: GetServerSideProps = async ({ locale = '' }) => ({
@@ -65,127 +80,197 @@ const mockInnerDevicesFunc = (): InnerSpecificDeviceBlockProps => {
 const mockRegionDevices = faker.helpers.multiple(mockRegionDevicesFunc, { count: 10 });
 const mockInnerDevices = faker.helpers.multiple(mockInnerDevicesFunc, { count: 10 });
 
+const timeOptions = [
+  {
+    label: 'Minute',
+    value: '1min',
+  },
+  {
+    label: 'Hourly',
+    value: '1H',
+  },
+  {
+    label: 'Daily',
+    value: '1D',
+  },
+  {
+    label: 'Weekly',
+    value: '1W',
+  },
+  {
+    label: 'Monthly',
+    value: '1M',
+  },
+  {
+    label: 'Yearly',
+    value: '1Y',
+  },
+];
+
 export default function Home() {
   const { t } = useTranslation('common');
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
   const [showNotification, setShowNotification] = useState(false);
   const [showExportNotification, setShowExportNotification] = useState(false);
   const [notifications, setNotifications] = useState<DeviceBlockNotification[]>([]);
+  const [rawNotifications, setRawNotification] = useState<OverallNotificationsResult[]>([]);
   // const { locale } = router;
   const [showDevices, setShowDevices] = useState(false);
   const [showSideData, setShowSideData] = useState(false);
   const [showInnerSideData, setShowInnerSideData] = useState(false);
-  const chart1Data = [
-    {
-      date: '2024-01-01',
-      value: 200,
-    },
-    {
-      date: '2024-01-02',
-      value: 300,
-    },
-    {
-      date: '2024-01-03',
-      value: 250,
-    },
-    {
-      date: '2024-01-04',
-      value: 290,
-    },
-    {
-      date: '2024-01-05',
-      value: 190,
-    },
-    {
-      date: '2024-01-06',
-      value: 320,
-    },
-    {
-      date: '2024-01-07',
-      value: 270,
-    },
-  ];
+  const [allDevice, setAllDevice] = useState(0);
+  const [onlineDevice, setOnlineDevice] = useState(0);
+  const [offlineDevice, setOfflineDevice] = useState(0);
+  const [geoData, setGeoData] = useState<PointData[]>([]);
+  const [regionData, setRegionData] = useState<OverallRegion[]>([]);
+  const [loadGraphLoading, setLoadGraphLoading] = useState(true);
+  const [savingsGraphLoading, setSavingsGraphLoading] = useState(true);
+  const [loadData, setLoadData] = useState<any[]>([]);
+  const [loadDataPeriod, setLoadDataPeriod] = useState<GraphPeriods>('1M');
+  const [savingsData, setSavingsData] = useState<any[]>([]);
+  const [savingsDataPeriod, setSavingsDataPeriod] = useState<GraphPeriods>('1M');
 
-  const mockChartStatus: DeviceBlockNotification[] = [
-    {
-      type: 'danger',
-      title: 'Chiang Mai Battery Off',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-    {
-      type: 'info',
-      title: 'Lampang Solar Panel Off',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-    {
-      type: 'warning',
-      title: 'Mae Hong Son MPPT Warning',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-    {
-      type: 'danger',
-      title: 'Chiang Mai Battery Off',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-    {
-      type: 'info',
-      title: 'Lampang Solar Panel Off',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-    {
-      type: 'warning',
-      title: 'Mae Hong Son MPPT Warning',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-    {
-      type: 'danger',
-      title: 'Chiang Mai Battery Off',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-    {
-      type: 'info',
-      title: 'Lampang Solar Panel Off',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-    {
-      type: 'warning',
-      title: 'Mae Hong Son MPPT Warning',
-      description: 'Please   xxxxxxxx xxxxxxxxxxx xxxxx xxxx xxxxxxxxxx xxxxxx xxxxx xxx xxx xxxxxxxx xxxx xxxxxxx',
-    },
-  ];
+  const CentralData = regionData.find(v => v.region === 'Central');
+  const NorthData = regionData.find(v => v.region === 'Northern');
+  const NortheastData = regionData.find(v => v.region === 'Isan');
+  const SouthData = regionData.find(v => v.region === 'Southern');
+
+  const centralNotification = rawNotifications.filter(v => v.region === 'Central');
+  const northNotification = rawNotifications.filter(v => v.region === 'Northern');
+  const northeastNotification = rawNotifications.filter(v => v.region === 'Isan');
+  const southNotification = rawNotifications.filter(v => v.region === 'Southern');
 
   useEffect(() => {
-    setNotifications(mockChartStatus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const token = localStorage.getItem('token');
+    const getUserInfo = async (tk: string) => {
+      try {
+        const { apiUrl, mariaPort, apiPort } = environments;
+        const res = await axo.get<UserInfo>(`${apiUrl}:${mariaPort}/info`, {
+          headers: {
+            Authorization: `Bearer ${tk}`,
+          },
+        });
+        if (res) {
+          const data = await axo.get<OverallResponse>(`${apiUrl}:${apiPort}/regions/device`);
+          setAllDevice(data.data.result.total.alllDevice);
+          setOnlineDevice(data.data.result.total.allOnline);
+          setOfflineDevice(data.data.result.total.allOffline);
+          const newGeoData = data.data.result.geoMap.map(v => {
+            return {
+              title: v.name,
+              latitude: v.latitude,
+              longitude: v.longtitude,
+            };
+          });
+          setGeoData(newGeoData);
+          setRegionData(data.data.result.regions);
+          const noti = await axo.get<OverallNotificationsResponse>(`${apiUrl}:${apiPort}/notification`);
+          const newNotiData: DeviceBlockNotification[] = noti.data.result.map(v => {
+            return {
+              title: `${v.device} ${v.title}`,
+              description: v.description,
+              type: handleNotificationType(v.status),
+            };
+          });
+          setRawNotification(noti.data.result);
+          setNotifications(newNotiData);
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+        localStorage.removeItem('token');
+        router.push('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (token && router.isReady) {
+      getUserInfo(token);
+    } else {
+      localStorage.removeItem('token');
+      router.push('/login');
+    }
+  }, [router]);
 
-  const mockData = [
-    {
-      title: 'Device 1',
-      latitude: 18.807347862055344,
-      longitude: 98.89559389865217,
-    },
-    {
-      title: 'Device 2',
-      latitude: 13.895475858583062,
-      longitude: 100.34681463561515,
-    },
-    {
-      title: 'Device 3',
-      latitude: 14.096725463344901,
-      longitude: 101.12581642666886,
-    },
-    {
-      title: 'Device 4',
-      latitude: 15.981243110460131,
-      longitude: 103.73698540880565,
-    },
-    {
-      title: 'Device 5',
-      latitude: 8.995852165733474,
-      longitude: 99.12451153911717,
-    },
-  ];
+  // Load graph
+  useEffect(() => {
+    const controller = new AbortController();
+    const getLoadGraphData = async () => {
+      setLoadGraphLoading(true);
+      try {
+        const { apiUrl, apiPort } = environments;
+        const data = await axo.get<OverallGraphResponse>(`${apiUrl}:${apiPort}/home/graph/type`, {
+          params: {
+            period: loadDataPeriod,
+            type: 'LoadTable',
+          },
+          signal: controller.signal,
+        });
+        const newData = sortObjectsByDateTimeKey(data.data.result.data, 'datetime')
+          .filter(v => !!v.value)
+          .map(v => {
+            const newV = v;
+            // @ts-ignore
+            newV.datetime = dayjs(v.datetime).format(handlePeriod(loadDataPeriod));
+            return newV;
+          });
+        setLoadData(newData);
+      } catch (error) {
+        if (error instanceof AxiosError && error.code !== 'ERR_CANCELED') {
+          // eslint-disable-next-line no-console
+          console.log(error);
+        }
+      } finally {
+        setLoadGraphLoading(false);
+      }
+    };
+    getLoadGraphData();
+    return () => controller.abort();
+  }, [loadDataPeriod]);
+
+  // Savings graph
+  useEffect(() => {
+    const controller = new AbortController();
+    const getSavingsGraphData = async () => {
+      setSavingsGraphLoading(true);
+      try {
+        const { apiUrl, apiPort } = environments;
+        const data = await axo.get<OverallGraphResponse>(`${apiUrl}:${apiPort}/home/graph/type`, {
+          params: {
+            period: savingsDataPeriod,
+            type: 'MoneySaving',
+          },
+          signal: controller.signal,
+        });
+        const newData = sortObjectsByDateTimeKey(data.data.result.data, 'datetime')
+          .filter(v => !!v.value)
+          .map(v => {
+            const newV = v;
+            // @ts-ignore
+            newV.datetime = dayjs(v.datetime).format(handlePeriod(savingsDataPeriod));
+            return newV;
+          });
+        setSavingsData(newData);
+      } catch (error) {
+        if (error instanceof AxiosError && error.code !== 'ERR_CANCELED') {
+          // eslint-disable-next-line no-console
+          console.log(error);
+        }
+      } finally {
+        setSavingsGraphLoading(false);
+      }
+    };
+    getSavingsGraphData();
+    return () => controller.abort();
+  }, [savingsDataPeriod]);
+
+  const handleLogoutFunc = () => {
+    setLoading(true);
+    localStorage.removeItem('token');
+    router.push('/login');
+  };
 
   const handleLogout = () => {
     Modal.warning({
@@ -195,9 +280,13 @@ export default function Home() {
       okButtonProps: {
         className: 'bg-red-01 hover:bg-red-01/50',
       },
-      onOk: () => router.push('/login'),
+      onOk: () => handleLogoutFunc(),
     });
   };
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div>
@@ -302,7 +391,7 @@ export default function Home() {
                               <img src={svg} alt="" />
                               <div className="flex flex-col gap-y-2">
                                 <div className={`text-sm font-semibold ${textColor}`}>{item.title}</div>
-                                <div className="text-[12px]">{item.description}</div>
+                                <div className="text-[12px] leading-normal">{item.description}</div>
                               </div>
                             </div>
                           );
@@ -357,7 +446,7 @@ export default function Home() {
       </Drawer>
 
       <div className="relative flex min-h-screen min-w-full items-center justify-center overflow-auto ">
-        <ThailandChart data={mockData} className="absolute inset-0 mx-auto size-full min-h-[400px] max-w-[1280px]" />
+        <ThailandChart data={geoData} className="absolute inset-0 mx-auto size-full min-h-[400px] max-w-[1280px]" />
 
         {/* NORTHERN */}
         <div className="absolute left-[55px] top-[10%] flex gap-x-4">
@@ -365,25 +454,33 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
-            deviceCount={17}
-            notification={mockChartStatus}
-            criticalCount={4}
-            warningCount={5}
             deviceName={t('northernDevice')}
-            offlineCount={1}
-            onlineCount={1}
+            deviceCount={NorthData?.amount}
+            notification={northNotification?.map(v => {
+              return (
+                {
+                  title: `${v.device} ${v.title}`,
+                  description: v.description,
+                  type: handleNotificationType(v.status),
+                } || []
+              );
+            })}
+            criticalCount={NorthData?.criticalAll}
+            warningCount={NorthData?.warning}
+            offlineCount={NorthData?.deviceOffline}
+            onlineCount={NorthData?.deviceOnline}
             onlineStatus={{
               light: {
-                offline: 1,
-                online: 1,
+                offline: NorthData?.loadOffline,
+                online: NorthData?.loadOnline,
               },
               battery: {
-                offline: 1,
-                online: 1,
+                offline: NorthData?.batteryOffline,
+                online: NorthData?.batteryOnline,
               },
               solar: {
-                offline: 1,
-                online: 1,
+                offline: NorthData?.panelOffline,
+                online: NorthData?.panelOnline,
               },
             }}
           />
@@ -399,25 +496,33 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
-            deviceCount={17}
-            notification={mockChartStatus}
-            criticalCount={4}
-            warningCount={5}
             deviceName={t('centralDevice')}
-            offlineCount={1}
-            onlineCount={1}
+            deviceCount={CentralData?.amount}
+            notification={centralNotification?.map(v => {
+              return (
+                {
+                  title: `${v.device} ${v.title}`,
+                  description: v.description,
+                  type: handleNotificationType(v.status),
+                } || []
+              );
+            })}
+            criticalCount={CentralData?.criticalAll}
+            warningCount={CentralData?.warning}
+            offlineCount={CentralData?.deviceOffline}
+            onlineCount={CentralData?.deviceOnline}
             onlineStatus={{
               light: {
-                offline: 1,
-                online: 1,
+                offline: CentralData?.loadOffline,
+                online: CentralData?.loadOnline,
               },
               battery: {
-                offline: 1,
-                online: 1,
+                offline: CentralData?.batteryOffline,
+                online: CentralData?.batteryOnline,
               },
               solar: {
-                offline: 1,
-                online: 1,
+                offline: CentralData?.panelOffline,
+                online: CentralData?.panelOnline,
               },
             }}
           />
@@ -430,28 +535,36 @@ export default function Home() {
         {/* SOUTHERN */}
         <div className="absolute bottom-[10%] left-[80px] flex gap-x-4">
           <DeviceBlock
-            deviceCount={17}
             onClick={() => {
               setShowSideData(true);
             }}
-            notification={mockChartStatus}
-            criticalCount={4}
-            warningCount={5}
             deviceName={t('southernDevice')}
-            offlineCount={1}
-            onlineCount={1}
+            deviceCount={SouthData?.amount}
+            notification={southNotification?.map(v => {
+              return (
+                {
+                  title: `${v.device} ${v.title}`,
+                  description: v.description,
+                  type: handleNotificationType(v.status),
+                } || []
+              );
+            })}
+            criticalCount={SouthData?.criticalAll}
+            warningCount={SouthData?.warning}
+            offlineCount={SouthData?.deviceOffline}
+            onlineCount={SouthData?.deviceOnline}
             onlineStatus={{
               light: {
-                offline: 1,
-                online: 1,
+                offline: SouthData?.loadOffline,
+                online: SouthData?.loadOnline,
               },
               battery: {
-                offline: 1,
-                online: 1,
+                offline: SouthData?.batteryOffline,
+                online: SouthData?.batteryOnline,
               },
               solar: {
-                offline: 1,
-                online: 1,
+                offline: SouthData?.panelOffline,
+                online: SouthData?.panelOnline,
               },
             }}
           />
@@ -471,25 +584,33 @@ export default function Home() {
             onClick={() => {
               setShowSideData(true);
             }}
-            deviceCount={17}
-            notification={mockChartStatus}
-            criticalCount={4}
-            warningCount={5}
             deviceName={t('northeastDevice')}
-            offlineCount={1}
-            onlineCount={1}
+            deviceCount={NortheastData?.amount}
+            notification={northeastNotification?.map(v => {
+              return (
+                {
+                  title: `${v.device} ${v.title}`,
+                  description: v.description,
+                  type: handleNotificationType(v.status),
+                } || []
+              );
+            })}
+            criticalCount={NortheastData?.criticalAll}
+            warningCount={NortheastData?.warning}
+            offlineCount={NortheastData?.deviceOffline}
+            onlineCount={NortheastData?.deviceOnline}
             onlineStatus={{
               light: {
-                offline: 1,
-                online: 1,
+                offline: NortheastData?.loadOffline,
+                online: NortheastData?.loadOnline,
               },
               battery: {
-                offline: 1,
-                online: 1,
+                offline: NortheastData?.batteryOffline,
+                online: NortheastData?.batteryOnline,
               },
               solar: {
-                offline: 1,
-                online: 1,
+                offline: NortheastData?.panelOffline,
+                online: NortheastData?.panelOnline,
               },
             }}
           />
@@ -501,15 +622,15 @@ export default function Home() {
             {/* HEADER */}
             <DownOutlined className="absolute right-2 top-2 cursor-pointer" onClick={() => setShowDevices(false)} />
             <div className="flex items-center justify-between">
-              <div className="text-2xl">All Device: 98</div>
+              <div className="text-2xl">All Device: {allDevice}</div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-x-2">
                   <div className="flex size-[10px] rounded-full bg-green-01 drop-shadow-md"></div>
-                  <div className="">Online 90</div>
+                  <div className="">Online {onlineDevice}</div>
                 </div>
                 <div className="flex items-center gap-x-2">
                   <div className="flex size-[10px] rounded-full bg-red-01 drop-shadow-md"></div>
-                  <div className="">Offline 8</div>
+                  <div className="">Offline {offlineDevice}</div>
                 </div>
               </div>
             </div>
@@ -520,38 +641,30 @@ export default function Home() {
                   <div className="flex size-12 items-center justify-center rounded-xl bg-[#00B8BD]">
                     <img src="/img/lightning.png" alt="" />
                   </div>
-                  <div className="text-2xl">Load Table</div>
+                  <div className="text-xl">Load Table</div>
                 </div>
 
                 <Select
-                  defaultValue={'day'}
                   variant="borderless"
+                  className="w-[100px]"
+                  value={loadDataPeriod}
+                  onChange={setLoadDataPeriod}
                   size="large"
-                  options={[
-                    {
-                      label: 'Week',
-                      value: 'day',
-                    },
-                    {
-                      label: 'Month',
-                      value: 'month',
-                    },
-                    {
-                      label: 'Year',
-                      value: 'year',
-                    },
-                  ]}
+                  options={timeOptions}
                 />
               </div>
-              <SimpleBarChart
-                data={chart1Data}
-                xKey="date"
-                yKey="value"
-                divId="testroot"
-                className="h-[120px] w-full"
-                timeUnit="day"
-                suffixText="kWh"
-              />
+              {loadGraphLoading ? (
+                <Skeleton paragraph={{ rows: 3 }} active />
+              ) : (
+                <SimpleBarChart
+                  data={loadData}
+                  xKey="datetime"
+                  yKey="value"
+                  divId="testroot"
+                  className="h-[120px] w-full"
+                  suffixText="Wh"
+                />
+              )}
             </div>
             <div className="mt-4 flex flex-col gap-x-2 rounded-xl border border-neutral-01/20 p-4 shadow-lg">
               <div className="flex justify-between">
@@ -559,38 +672,30 @@ export default function Home() {
                   <div className="flex size-12 items-center justify-center rounded-xl bg-[#00B8BD]">
                     <img src="/img/dollar.png" alt="" />
                   </div>
-                  <div className="text-2xl">Money Saving</div>
+                  <div className="text-xl">Money Saving</div>
                 </div>
 
                 <Select
-                  defaultValue={'day'}
                   variant="borderless"
                   size="large"
-                  options={[
-                    {
-                      label: 'Week',
-                      value: 'day',
-                    },
-                    {
-                      label: 'Month',
-                      value: 'month',
-                    },
-                    {
-                      label: 'Year',
-                      value: 'year',
-                    },
-                  ]}
+                  className="w-[100px]"
+                  value={savingsDataPeriod}
+                  onChange={setSavingsDataPeriod}
+                  options={timeOptions}
                 />
               </div>
-              <SimpleBarChart
-                data={chart1Data}
-                xKey="date"
-                yKey="value"
-                divId="testroot2"
-                className="h-[120px] w-full"
-                timeUnit="day"
-                suffixText="THB"
-              />
+              {savingsGraphLoading ? (
+                <Skeleton paragraph={{ rows: 3 }} active />
+              ) : (
+                <SimpleBarChart
+                  data={savingsData}
+                  xKey="datetime"
+                  yKey="value"
+                  divId="testroot2"
+                  className="h-[120px] w-full"
+                  suffixText="THB"
+                />
+              )}
             </div>
           </div>
         )}

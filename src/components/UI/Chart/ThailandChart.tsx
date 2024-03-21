@@ -18,7 +18,7 @@ export interface SimpleBarChartProps {
   onZoom?: () => void;
 }
 
-interface PointData {
+export interface PointData {
   title: string;
   latitude: number;
   longitude: number;

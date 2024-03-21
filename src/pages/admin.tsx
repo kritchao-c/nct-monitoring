@@ -11,9 +11,13 @@ import { Button, Drawer, Form, Input, Modal, Select, Table, Upload, notification
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { faker } from '@faker-js/faker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import SimplePieChart from '@/components/UI/Chart/SimplePieChart';
+import { environments } from '@/configs/environments';
+import axo from '@/configs/axios';
+import { UserInfo } from '@/types';
+import LoadingScreen from '@/components/UI/LoadingScreen';
 
 interface User {
   name: string;
@@ -41,9 +45,16 @@ const fakeUserFunc = (count: number) => {
 const AdminPage: NextPage = () => {
   const [currentPage, setCurrenPage] = useState(1);
   const [editForm] = Form.useForm();
+  const [pageLoading, setPageLoading] = useState(true);
   const [openAddUser, setOpenAddUser] = useState(false);
   const [openEditUser, setOpenEditUser] = useState(false);
   const router = useRouter();
+
+  const handleLogoutFunc = () => {
+    setPageLoading(true);
+    localStorage.removeItem('token');
+    router.push('/login');
+  };
   const handleLogout = () => {
     Modal.warning({
       title: 'Do you want to logout ?',
@@ -52,7 +63,7 @@ const AdminPage: NextPage = () => {
       okButtonProps: {
         className: 'bg-red-01 hover:bg-red-01/50',
       },
-      onOk: () => router.push('/login'),
+      onOk: () => handleLogoutFunc(),
     });
   };
 
@@ -62,6 +73,35 @@ const AdminPage: NextPage = () => {
     }
     return e?.fileList;
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const getUserInfo = async (tk: string) => {
+      try {
+        const { apiUrl, mariaPort } = environments;
+        const res = await axo.get<UserInfo>(`${apiUrl}:${mariaPort}/info`, {
+          headers: {
+            Authorization: `Bearer ${tk}`,
+          },
+        });
+        if (!res.data) {
+          localStorage.removeItem('token');
+          router.push('/login');
+        }
+        setPageLoading(false);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+        localStorage.removeItem('token');
+        router.push('/login');
+      }
+    };
+    if (token && router.isReady) {
+      getUserInfo(token);
+    } else {
+      router.push('/login');
+    }
+  }, [router]);
 
   const CustomUpload: React.FC<{ name: string }> = ({ name }) => {
     return (
@@ -89,6 +129,9 @@ const AdminPage: NextPage = () => {
     );
   };
 
+  if (pageLoading) {
+    return <LoadingScreen />;
+  }
   return (
     <div className="min-w-screen min-h-screen">
       {/* CREATE USER DRAWER */}
