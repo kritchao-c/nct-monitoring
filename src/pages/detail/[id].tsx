@@ -21,6 +21,7 @@ import { environments } from '@/configs/environments';
 import { UserInfo } from '@/types';
 import axo from '@/configs/axios';
 import LoadingScreen from '@/components/UI/LoadingScreen';
+import { DeviceDetailResponse } from '@/types/details';
 
 const fakeProductionData = (count: number) => {
   const data: { date: number; value: number }[] = [];
@@ -97,6 +98,7 @@ const DeviceDetailPage: NextPage = () => {
   const [showExport, setShowExport] = useState(false);
   const [openSetting, setOpenSetting] = useState(false);
   const [selectedGraph, setSelectedGraph] = useState<string | undefined>();
+  const [data, setData] = useState<DeviceDetailResponse['result'] | undefined>();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -127,6 +129,28 @@ const DeviceDetailPage: NextPage = () => {
     }
   }, [router]);
 
+  useEffect(() => {
+    const { id } = router.query;
+    const getAllData = async (name: string) => {
+      setPageLoading(true);
+      try {
+        const { apiUrl, apiPort } = environments;
+        const detailData = await axo.get<DeviceDetailResponse>(`${apiUrl}:${apiPort}/device/detail`, {
+          params: { device: name },
+        });
+        setData(detailData.data.result);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+    if (id) {
+      getAllData(id.toString());
+    }
+  }, [router.query]);
+
   const detailBlocks: DetailBlockProps[] = [
     {
       title: (
@@ -136,7 +160,7 @@ const DeviceDetailPage: NextPage = () => {
         </div>
       ),
       icon: <NewSetting />,
-      children: '70%',
+      children: `${data?.overall.systemefficiency}%`,
     },
     {
       title: (
@@ -146,7 +170,7 @@ const DeviceDetailPage: NextPage = () => {
         </div>
       ),
       icon: <EnergyCircle />,
-      children: '70%',
+      children: `${data?.overall.energyutilization}%`,
     },
     {
       title: (
@@ -155,7 +179,7 @@ const DeviceDetailPage: NextPage = () => {
         </div>
       ),
       icon: <CO2 />,
-      children: '70%',
+      children: `${data?.overall.consumption}%`,
     },
     {
       title: (
@@ -166,7 +190,7 @@ const DeviceDetailPage: NextPage = () => {
       icon: <DollarSign />,
       children: (
         <div className="flex items-center gap-x-2">
-          150 <span className="text-base">THB</span>
+          {data?.overall.energycostsavings} <span className="text-base">THB</span>
         </div>
       ),
     },
@@ -175,7 +199,7 @@ const DeviceDetailPage: NextPage = () => {
       icon: <DollarSign />,
       children: (
         <div className="flex items-center gap-x-2">
-          150 <span className="text-base">THB</span>
+          {data?.overall.production} <span className="text-base">THB</span>
         </div>
       ),
     },
@@ -417,7 +441,7 @@ const DeviceDetailPage: NextPage = () => {
         <div className="flex items-center justify-between gap-x-2 text-[26px] font-semibold">
           <div className="flex items-center gap-x-2">
             <Dashboard />
-            Dashboard Bangkok 01
+            {router.query.id}
           </div>
           <div className="flex items-center gap-x-2">
             <img
@@ -532,7 +556,7 @@ const DeviceDetailPage: NextPage = () => {
                 <div className="pt-2">House area:</div>
                 <div className="font-semibold">125 m2</div>
                 <div className="pt-2">Average temperature:</div>
-                <div className="font-semibold">50°C</div>
+                <div className="font-semibold">{data?.details.temperature.toFixed(2)}°C</div>
               </div>
             </div>
           </div>
@@ -554,21 +578,21 @@ const DeviceDetailPage: NextPage = () => {
                     <div className="flex size-[10px] rounded-full bg-[#005980] drop-shadow-md" />
                     Production
                   </div>
-                  <div className="text-[18px]">236 THB</div>
+                  <div className="text-[18px]">{data?.overall.production} THB</div>
                 </div>
                 <div className="flex min-h-[70px] w-full flex-col items-center justify-center rounded-md bg-[#00B8BD1A] ">
                   <div className="flex items-center gap-2">
                     <div className="flex size-[10px] rounded-full bg-[#00B8BD] drop-shadow-md" />
                     Consumption
                   </div>
-                  <div className="text-[18px]">90 THB</div>
+                  <div className="text-[18px]">{data?.overall.consumption} THB</div>
                 </div>
                 <div className="flex min-h-[70px] w-full flex-col items-center justify-center rounded-md bg-[#00B8BD1A] ">
                   <div className="flex items-center gap-2">
                     <div className="flex size-[10px] rounded-full bg-[#004082] drop-shadow-md" />
                     Saving
                   </div>
-                  <div className="text-[18px]">10 THB</div>
+                  <div className="text-[18px]">{data?.overall.energycostsavings} THB</div>
                 </div>
               </div>
               <div className="text-[20px] font-semibold">Total: 336 THB</div>

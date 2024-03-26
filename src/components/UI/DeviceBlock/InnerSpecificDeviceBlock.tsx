@@ -43,19 +43,19 @@ const InnerSpecificDeviceBlock: React.FC<InnerSpecificDeviceBlockProps> = ({
       </div>
       <div className="flex items-center justify-between text-[10px]">
         <div className="flex flex-col items-center">
-          Panel Power<div className="text-base font-semibold">{panelPower} W</div>
+          Panel Power<div className="text-base font-semibold">{panelPower?.toFixed(2)} W</div>
         </div>
         <div />
         <div className="flex flex-col items-center">
-          Stage of Charge<div className="pl-1 text-base font-semibold">{stageOfCharge} %</div>
+          Stage of Charge<div className="pl-1 text-base font-semibold">{stageOfCharge?.toFixed(2)} %</div>
         </div>
         <div />
         <div className="flex flex-col items-center">
-          Load Power<div className="text-base font-semibold">{loadPower} kW</div>
+          Load Power<div className="text-base font-semibold">{loadPower?.toFixed(2)} kW</div>
         </div>
       </div>
       <div className="pt-4 text-center font-semibold">
-        Power Savings Today <span className="text-blue-01">{powerSaved}</span> Watt
+        Power Savings Today <span className="text-blue-01">{powerSaved?.toFixed(2)}</span> Watt
       </div>
     </div>
   );

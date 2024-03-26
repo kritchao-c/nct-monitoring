@@ -84,7 +84,7 @@ const AdminPage: NextPage = () => {
             Authorization: `Bearer ${tk}`,
           },
         });
-        if (!res.data) {
+        if (!res.data || (res.data && res.data.role !== 'admin')) {
           localStorage.removeItem('token');
           router.push('/login');
         }

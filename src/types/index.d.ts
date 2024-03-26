@@ -75,3 +75,49 @@ export interface OverallNotificationsResult {
   province: string;
   Time: string;
 }
+
+export interface OverallDeviceRegionResponse {
+  errorCode: number;
+  result: OverallDeviceRegion[];
+}
+
+export interface OverallDeviceRegion {
+  region: string;
+  locations: OverallDeviceRegionLocation[];
+}
+
+export interface OverallDeviceRegionLocation {
+  location: string;
+  devicesNumber: number;
+  panelOnline: number;
+  panelOffline: number;
+  batteryOnline: number;
+  batteryOffline: number;
+  loadOnline: number;
+  loadOffline: number;
+  criticalAll: number;
+  warning: number;
+}
+
+export interface OverallDeviceRegionInnerResponse {
+  errorCode: number;
+  result: OverallDeviceRegionInner;
+}
+
+export interface OverallDeviceRegionInner {
+  location: string;
+  devices: OverallDeviceRegionInnerDevice[];
+}
+
+export interface OverallDeviceRegionInnerDevice {
+  device: string;
+  details: OverallDeviceRegionInnerDetails;
+}
+
+export interface OverallDeviceRegionInnerDetails {
+  panelPower?: number;
+  battery?: string;
+  batteryStatus?: string;
+  loadPower?: string;
+  powerSaving?: number;
+}

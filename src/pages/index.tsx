@@ -10,7 +10,6 @@ import {
 } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { faker } from '@faker-js/faker';
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
@@ -30,6 +29,8 @@ import axo from '@/configs/axios';
 import { environments } from '@/configs/environments';
 import {
   GraphPeriods,
+  OverallDeviceRegionInnerResponse,
+  OverallDeviceRegionResponse,
   OverallGraphResponse,
   OverallNotificationsResponse,
   OverallNotificationsResult,
@@ -46,39 +47,6 @@ export const getServerSideProps: GetServerSideProps = async ({ locale = '' }) =>
     ...(await serverSideTranslations(locale, ['common'])),
   },
 });
-
-const mockRegionDevicesFunc = (): SpecificDeviceBlockProps => {
-  return {
-    deviceName: faker.commerce.productName(),
-    panelPower: {
-      online: faker.number.int({ min: 0, max: 50 }),
-      offline: faker.number.int({ min: 0, max: 50 }),
-    },
-    loadPower: {
-      online: faker.number.int({ min: 0, max: 50 }),
-      offline: faker.number.int({ min: 0, max: 50 }),
-    },
-    stageOfCharge: {
-      online: faker.number.int({ min: 0, max: 50 }),
-      offline: faker.number.int({ min: 0, max: 50 }),
-    },
-    critical: faker.number.int({ min: 0, max: 50 }),
-    warning: faker.number.int({ min: 0, max: 50 }),
-    unitCount: faker.number.int({ min: 0, max: 50 }),
-  };
-};
-const mockInnerDevicesFunc = (): InnerSpecificDeviceBlockProps => {
-  return {
-    deviceName: faker.commerce.productName(),
-    panelPower: faker.number.float({ min: 0, max: 200, fractionDigits: 2 }),
-    loadPower: faker.number.float({ min: 0, max: 10, fractionDigits: 2 }),
-    stageOfCharge: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
-    powerSaved: faker.number.float({ min: 100, max: 2000, fractionDigits: 2 }),
-  };
-};
-
-const mockRegionDevices = faker.helpers.multiple(mockRegionDevicesFunc, { count: 10 });
-const mockInnerDevices = faker.helpers.multiple(mockInnerDevicesFunc, { count: 10 });
 
 const timeOptions = [
   {
@@ -131,6 +99,13 @@ export default function Home() {
   const [loadDataPeriod, setLoadDataPeriod] = useState<GraphPeriods>('1M');
   const [savingsData, setSavingsData] = useState<any[]>([]);
   const [savingsDataPeriod, setSavingsDataPeriod] = useState<GraphPeriods>('1M');
+  const [sidebarLoading, setSidebarLoading] = useState(false);
+  const [originalRegionDevices, setOriginalRegionDevices] = useState<SpecificDeviceBlockProps[]>([]);
+  const [regionDevices, setRegionDevices] = useState<SpecificDeviceBlockProps[]>([]);
+  const [regionDeviceSearch, setRegionDeviceSearch] = useState<string | undefined>();
+  const [originalRegionInnerDevices, setOriginalRegionInnerDevices] = useState<InnerSpecificDeviceBlockProps[]>([]);
+  const [regionInnerDevices, setRegionInnerDevices] = useState<InnerSpecificDeviceBlockProps[]>([]);
+  const [regionInnerDeviceSearch, setRegionInnerDeviceSearch] = useState<string | undefined>();
 
   const CentralData = regionData.find(v => v.region === 'Central');
   const NorthData = regionData.find(v => v.region === 'Northern');
@@ -153,6 +128,9 @@ export default function Home() {
           },
         });
         if (res) {
+          if (res.data.role === 'admin') {
+            router.push('/admin');
+          }
           const data = await axo.get<OverallResponse>(`${apiUrl}:${apiPort}/regions/device`);
           setAllDevice(data.data.result.total.alllDevice);
           setOnlineDevice(data.data.result.total.allOnline);
@@ -283,6 +261,107 @@ export default function Home() {
       onOk: () => handleLogoutFunc(),
     });
   };
+
+  const onClickRegionBlock = async (region: string) => {
+    setSidebarLoading(true);
+    try {
+      const { apiUrl, apiPort } = environments;
+      const regionDataResponse = await axo.get<OverallDeviceRegionResponse>(
+        `${apiUrl}:${apiPort}/province/device/detail`,
+        {
+          params: {
+            region,
+          },
+        },
+      );
+      const preparedData: SpecificDeviceBlockProps[] = regionDataResponse.data.result?.[0].locations.map(v => {
+        return {
+          deviceName: v.location,
+          panelPower: {
+            online: v.panelOnline,
+            offline: v.panelOffline,
+          },
+          loadPower: {
+            online: v.loadOnline,
+            offline: v.loadOffline,
+          },
+          stageOfCharge: {
+            online: v.batteryOnline,
+            offline: v.batteryOffline,
+          },
+          critical: v.criticalAll,
+          warning: v.warning,
+          unitCount: v.devicesNumber,
+        };
+      });
+      setOriginalRegionDevices(preparedData);
+      setRegionDevices(preparedData);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+      setOriginalRegionDevices([]);
+      setRegionDevices([]);
+    } finally {
+      setSidebarLoading(false);
+    }
+  };
+
+  // HANDLE SEARCH REGION DATA
+  useEffect(() => {
+    if (originalRegionDevices.length !== 0 && regionDeviceSearch?.length !== 0) {
+      const newData = originalRegionDevices.filter(v =>
+        v.deviceName?.toUpperCase().includes(regionDeviceSearch?.toUpperCase() || ''),
+      );
+      setRegionDevices(newData);
+    } else {
+      setRegionDevices(originalRegionDevices);
+    }
+  }, [originalRegionDevices, regionDeviceSearch]);
+
+  const onClickRegionInnerBlock = async (location: string) => {
+    setSidebarLoading(true);
+    try {
+      const { apiUrl, apiPort } = environments;
+      const regionInnerDataResponse = await axo.get<OverallDeviceRegionInnerResponse>(
+        `${apiUrl}:${apiPort}/device/province`,
+        {
+          params: {
+            location,
+          },
+        },
+      );
+      const preparedData: InnerSpecificDeviceBlockProps[] = regionInnerDataResponse.data.result.devices.map(v => {
+        return {
+          deviceName: v.device,
+          panelPower: v.details?.panelPower || 0,
+          loadPower: v.details?.loadPower ? Number(v.details.loadPower) : 0,
+          stageOfCharge: v.details.battery ? Number(v.details.battery) : 0,
+          powerSaved: v.details.powerSaving,
+        };
+      });
+      setOriginalRegionInnerDevices(preparedData);
+      setRegionInnerDevices(preparedData);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+      setOriginalRegionInnerDevices([]);
+      setRegionInnerDevices([]);
+    } finally {
+      setSidebarLoading(false);
+    }
+  };
+
+  // HANDLE SEARCH REGION INNER DATA
+  useEffect(() => {
+    if (originalRegionInnerDevices.length !== 0 && regionInnerDeviceSearch?.length !== 0) {
+      const newData = originalRegionInnerDevices.filter(v =>
+        v.deviceName?.toUpperCase().includes(regionInnerDeviceSearch?.toUpperCase() || ''),
+      );
+      setRegionInnerDevices(newData);
+    } else {
+      setRegionInnerDevices(originalRegionInnerDevices);
+    }
+  }, [originalRegionInnerDevices, regionInnerDeviceSearch]);
 
   if (loading) {
     return <LoadingScreen />;
@@ -418,31 +497,74 @@ export default function Home() {
       {/* SIDE DATA */}
       <Drawer
         width={419}
-        title={<Input placeholder="input search text" addonAfter={<SearchOutlined />} />}
+        title={
+          <Input
+            placeholder="input search text"
+            value={regionDeviceSearch}
+            onChange={e => setRegionDeviceSearch(e.target.value)}
+            addonAfter={<SearchOutlined />}
+          />
+        }
         placement="left"
         open={showSideData}
-        onClose={() => setShowSideData(false)}
+        onClose={() => {
+          setRegionDeviceSearch(undefined);
+          setShowSideData(false);
+        }}
       >
-        <div className="flex flex-col gap-y-[25px]">
-          {mockRegionDevices.map((item, key) => {
-            return <SpecificDeviceBlock onClick={() => setShowInnerSideData(true)} {...item} key={key} />;
-          })}
-        </div>
+        {sidebarLoading ? (
+          <Skeleton paragraph={{ rows: 8 }} active />
+        ) : (
+          <div className="flex flex-col gap-y-[25px]">
+            {regionDevices.map((item, key) => {
+              return (
+                <SpecificDeviceBlock
+                  onClick={() => {
+                    setShowInnerSideData(true);
+                    onClickRegionInnerBlock(item.deviceName || '');
+                  }}
+                  {...item}
+                  key={key}
+                />
+              );
+            })}
+          </div>
+        )}
       </Drawer>
 
       {/* INNER SIDE DATA */}
       <Drawer
         width={419}
-        title={<Input placeholder="input search text" addonAfter={<SearchOutlined />} />}
+        title={
+          <Input
+            placeholder="input search text"
+            value={regionInnerDeviceSearch}
+            onChange={e => setRegionInnerDeviceSearch(e.target.value)}
+            addonAfter={<SearchOutlined />}
+          />
+        }
         placement="left"
         open={showInnerSideData}
-        onClose={() => setShowInnerSideData(false)}
+        onClose={() => {
+          setRegionInnerDeviceSearch(undefined);
+          setShowInnerSideData(false);
+        }}
       >
-        <div className="flex flex-col gap-y-[25px]">
-          {mockInnerDevices.map((item, key) => {
-            return <InnerSpecificDeviceBlock onClick={() => router.push('/detail/mockid')} {...item} key={key} />;
-          })}
-        </div>
+        {sidebarLoading ? (
+          <Skeleton paragraph={{ rows: 8 }} active />
+        ) : (
+          <div className="flex flex-col gap-y-[25px]">
+            {regionInnerDevices.map((item, key) => {
+              return (
+                <InnerSpecificDeviceBlock
+                  onClick={() => router.push(`/detail/${item.deviceName}`)}
+                  {...item}
+                  key={key}
+                />
+              );
+            })}
+          </div>
+        )}
       </Drawer>
 
       <div className="relative flex min-h-screen min-w-full items-center justify-center overflow-auto ">
@@ -453,6 +575,7 @@ export default function Home() {
           <DeviceBlock
             onClick={() => {
               setShowSideData(true);
+              onClickRegionBlock('Northern');
             }}
             deviceName={t('northernDevice')}
             deviceCount={NorthData?.amount}
@@ -495,6 +618,7 @@ export default function Home() {
           <DeviceBlock
             onClick={() => {
               setShowSideData(true);
+              onClickRegionBlock('Central');
             }}
             deviceName={t('centralDevice')}
             deviceCount={CentralData?.amount}
@@ -537,6 +661,7 @@ export default function Home() {
           <DeviceBlock
             onClick={() => {
               setShowSideData(true);
+              onClickRegionBlock('Southern');
             }}
             deviceName={t('southernDevice')}
             deviceCount={SouthData?.amount}
@@ -583,6 +708,7 @@ export default function Home() {
           <DeviceBlock
             onClick={() => {
               setShowSideData(true);
+              onClickRegionBlock('Isan');
             }}
             deviceName={t('northeastDevice')}
             deviceCount={NortheastData?.amount}
