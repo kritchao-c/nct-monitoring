@@ -106,7 +106,7 @@ export default function Home() {
   const [originalRegionInnerDevices, setOriginalRegionInnerDevices] = useState<InnerSpecificDeviceBlockProps[]>([]);
   const [regionInnerDevices, setRegionInnerDevices] = useState<InnerSpecificDeviceBlockProps[]>([]);
   const [regionInnerDeviceSearch, setRegionInnerDeviceSearch] = useState<string | undefined>();
-
+  const [userRole, setUserRole] = useState<string | undefined>();
   const CentralData = regionData.find(v => v.region === 'Central');
   const NorthData = regionData.find(v => v.region === 'Northern');
   const NortheastData = regionData.find(v => v.region === 'Isan');
@@ -131,6 +131,7 @@ export default function Home() {
           if (res.data.role === 'admin') {
             router.push('/admin');
           }
+          setUserRole(res.data.role);
           const data = await axo.get<OverallResponse>(`${apiUrl}:${apiPort}/regions/device`);
           setAllDevice(data.data.result.total.alllDevice);
           setOnlineDevice(data.data.result.total.allOnline);
@@ -334,7 +335,7 @@ export default function Home() {
         return {
           deviceName: v.device,
           panelPower: v.details?.panelPower || 0,
-          loadPower: v.details?.loadPower ? Number(v.details.loadPower) : 0,
+          loadPower: v.details.loadPower === 'on',
           stageOfCharge: v.details.battery ? Number(v.details.battery) : 0,
           powerSaved: v.details.powerSaving,
         };
@@ -557,7 +558,9 @@ export default function Home() {
             {regionInnerDevices.map((item, key) => {
               return (
                 <InnerSpecificDeviceBlock
-                  onClick={() => router.push(`/detail/${item.deviceName}`)}
+                  onClick={() => {
+                    if (userRole === 'operator') router.push(`/detail/${item.deviceName}`);
+                  }}
                   {...item}
                   key={key}
                 />

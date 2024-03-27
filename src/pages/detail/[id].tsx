@@ -114,6 +114,9 @@ const DeviceDetailPage: NextPage = () => {
           localStorage.removeItem('token');
           router.push('/login');
         }
+        if (res.data.role !== 'operator') {
+          router.push('/');
+        }
         setPageLoading(false);
       } catch (error) {
         // eslint-disable-next-line no-console

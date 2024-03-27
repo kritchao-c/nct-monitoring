@@ -118,6 +118,6 @@ export interface OverallDeviceRegionInnerDetails {
   panelPower?: number;
   battery?: string;
   batteryStatus?: string;
-  loadPower?: string;
+  loadPower?: 'on' | 'off';
   powerSaving?: number;
 }

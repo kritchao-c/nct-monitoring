@@ -27,6 +27,9 @@ const SpecificDeviceBlock: React.FC<SpecificDeviceBlockProps> = ({
   unitCount = 0,
   onClick,
 }) => {
+  const isPanel = panelPower?.online && panelPower?.online !== 0;
+  const isBattery = stageOfCharge?.online && stageOfCharge?.online !== 0;
+  const isLoad = loadPower?.online && loadPower.online !== 0;
   return (
     <div
       onClick={() => {
@@ -39,11 +42,11 @@ const SpecificDeviceBlock: React.FC<SpecificDeviceBlockProps> = ({
         <div className="pb-4 text-[14px] font-semibold">Device {unitCount} Unit</div>
       </div>
       <div className="flex items-center justify-between">
-        <img src="/svg/solar-panel2.svg" className="size-[55px]" alt="" />
-        <SlidingDot />
-        <img src="/svg/car-battery.svg" className="size-[55px]" alt="" />
-        <SlidingDot />
-        <img src="/svg/light-bulb2.svg" className="size-[55px]" alt="" />
+        <img src={isPanel ? '/svg/solar-panel2.svg' : '/svg/no-solar-panel.svg'} className="size-[55px]" alt="" />
+        {isPanel ? <SlidingDot /> : <img src="/svg/stop-loading.svg" alt="" className="w-[80px] px-2" />}
+        <img src={isBattery ? '/svg/car-battery.svg' : '/svg/no-battery.svg'} className="size-[55px]" alt="" />
+        {isLoad ? <SlidingDot /> : <img src="/svg/stop-loading.svg" alt="" className="w-[80px] px-2" />}
+        <img src={isLoad ? '/svg/light-bulb2.svg' : '/svg/no-light-bulb.svg'} className="size-[55px]" alt="" />
       </div>
       <div className="flex items-center justify-between pt-2 text-[10px]">
         <div className="flex flex-col items-center">

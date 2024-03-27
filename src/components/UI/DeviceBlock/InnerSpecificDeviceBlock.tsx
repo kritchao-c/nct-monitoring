@@ -5,7 +5,7 @@ export interface InnerSpecificDeviceBlockProps {
   deviceName?: string;
   panelPower?: number;
   stageOfCharge?: number;
-  loadPower?: number;
+  loadPower?: boolean;
   powerSaved?: number;
   onClick?: () => void;
 }
@@ -32,16 +32,20 @@ const InnerSpecificDeviceBlock: React.FC<InnerSpecificDeviceBlockProps> = ({
           className="size-[55px]"
           alt=""
         />
-        <SlidingDot />
-        <img src="/svg/car-battery.svg" className="size-[55px]" alt="" />
-        <SlidingDot />
+        {!panelPower || panelPower === 0 ? (
+          <img src="/svg/stop-loading.svg" alt="" className="w-[80px] px-2" />
+        ) : (
+          <SlidingDot />
+        )}
         <img
-          src={!loadPower || loadPower === 0 ? '/svg/no-light-bulb.svg' : '/svg/light-bulb2.svg'}
+          src={!stageOfCharge || stageOfCharge === 0 ? '/svg/no-battery.svg' : '/svg/car-battery.svg'}
           className="size-[55px]"
           alt=""
         />
+        {loadPower ? <SlidingDot /> : <img src="/svg/stop-loading.svg" alt="" className="w-[80px] px-2" />}
+        <img src={!loadPower ? '/svg/no-light-bulb.svg' : '/svg/light-bulb2.svg'} className="size-[55px]" alt="" />
       </div>
-      <div className="flex items-center justify-between text-[10px]">
+      <div className="flex items-start justify-between text-[10px]">
         <div className="flex flex-col items-center">
           Panel Power<div className="text-base font-semibold">{panelPower?.toFixed(2)} W</div>
         </div>
@@ -51,7 +55,9 @@ const InnerSpecificDeviceBlock: React.FC<InnerSpecificDeviceBlockProps> = ({
         </div>
         <div />
         <div className="flex flex-col items-center">
-          Load Power<div className="text-base font-semibold">{loadPower?.toFixed(2)} kW</div>
+          Load Power
+          <div />
+          <div className="text-base font-semibold">{loadPower ? 'On' : 'Off'}</div>
         </div>
       </div>
       <div className="pt-4 text-center font-semibold">
